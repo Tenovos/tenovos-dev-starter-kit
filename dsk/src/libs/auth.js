@@ -7,8 +7,6 @@ const client = new SecretsManagerClient({
   region: "us-east-1",
 });
 
-const config = require("../../config/config.json");
-const tools = require("../tools/utilities");
 const appAuth = require("./auth");
 const publishIngAccount = process.env.PUBLISHING_ACCOUNT;
 const secret_name = process.env.CUSTOMER_ID + "_" + publishIngAccount + "_dsk";
@@ -66,24 +64,9 @@ exports.parseSecretsByaccountId = async function parseSecretsByaccountId(
   return tenantSecrets;
 };
 
-/* PSD API config for @adobe/jwt-auth */
-exports.buildJWTConfig = async function buildJWTConfig(accountIdSecrets) {
-  console.log("buildJWTConfig PS API");
-  // get last element of claim to use as metaScope
-  const claim = accountIdSecrets.PSD_CLAIM;
-  const metaScope = claim.split("/").pop();
-  return {
-    clientId: accountIdSecrets.PSD_CLIENT_ID,
-    clientSecret: accountIdSecrets.PSD_CLIENT_SECRET,
-    technicalAccountId: accountIdSecrets.PSD_SUBJECT,
-    orgId: accountIdSecrets.PSD_ISSUER,
-    metaScopes: [metaScope],
-    privateKey: accountIdSecrets.PSD_PRIVATE_KEY,
-  };
-};
-
 // GET the Tenevos Token
-exports.tenevosAuth = async function tenevosAuth(accountIdSecrets, fetch) {
+exports.tenevosAuth = async function tenevosAuth(fetch) {
+  const accountIdSecrets = process.env.SECRETS;
   console.log("1. AUTH Tenovos");
   var options = {
     method: "POST",
@@ -109,6 +92,7 @@ exports.tenevosAuth = async function tenevosAuth(accountIdSecrets, fetch) {
 
   const data = await response.json();
 
+  console.log(`data: ${JSON.stringify(data)}`);
   process.env.TN_ACCESS_TOKEN = data.session.accessToken;
   process.env.TN_AUTHORIZATION = data.session.authorization;
 

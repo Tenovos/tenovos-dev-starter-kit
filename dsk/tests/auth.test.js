@@ -146,14 +146,10 @@ const result = {
 };
 
 describe('auth tests', () => {
-  it('verifies buildJWTConfig returns last element of claim', async () => {
-    const response = await auth.buildJWTConfig();
-    assert(response.metaScopes[0] === 'ent_ccas_sdk');
-  });
   it('verifies successful login returns success', async () => {
     const fetch = require('jest-fetch-mock');
     jest.setMock('node-fetch', fetch);
-    fetch.mockResponse(JSON.stringify({ ok: true, message: 'YATTA!', json: async () => { return 'test' } }));
+    fetch.mockResponse(JSON.stringify({ ok: true, message: 'YATTA!', session: { accessToken: "abc", authorization: "def" }, json: async () => { return { data: { session: { accessToken: "abc", authorization: "def" } } } } }));
     const response = await auth.tenevosAuth(fetch);
     console.log(response);
     assert(response);

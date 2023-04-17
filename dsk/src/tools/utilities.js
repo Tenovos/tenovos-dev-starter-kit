@@ -1,13 +1,9 @@
 const _ = require("underscore");
-const request = require("request-promise");
 const moment = require("moment");
 const config = require("../../config/config.json");
 const AWS = require("aws-sdk");
-const theSecret = require("../libs/getAwsSecrets");
-const fetch = require("node-fetch");
 const tools = require("./utilities");
-const documentManifestUrl = config.documentManifestUrl;
-const documentTextUrl = config.documentTextUrl;
+
 
 /* Initialize S3 object -- we must use signatureVersion: 'v4' for presigned PUT urls */
 const region = config.s3_region || "us-east-1";
@@ -69,10 +65,10 @@ exports.assetValidated = async function validateAsset(asset) {
 };
 
 exports.getMetadataById = async function getMetadataById(
-  accountIdSecrets,
   assetId,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
   // GET the filename for a given asset Id
   console.log(`START getMetadataById(${assetId})`);
   var getMetadataByIdOptions = {
@@ -101,11 +97,12 @@ exports.getMetadataById = async function getMetadataById(
 };
 
 exports.searchByObjectId = async function searchByObjectId(
-  accountIdSecrets,
   assetId,
   locale,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
+
   console.log(`START searchByObjectId(${assetId})`);
   const body = {
     from: 0,
@@ -143,10 +140,11 @@ exports.searchByObjectId = async function searchByObjectId(
 };
 
 exports.getMetadataTemplate = async function getMetadataTemplate(
-  accountIdSecrets,
   templateId,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
+
   console.log(`Begin Get MetadataTemplate`);
   //get the Asset Localization table
   // GET the filename for a given asset Id
@@ -176,9 +174,10 @@ exports.getMetadataTemplate = async function getMetadataTemplate(
 };
 
 exports.getCurApiUserId = async function getCurApiUserId(
-  accountIdSecrets,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
+
   // console.log(this);
   console.log(`SUCCESS: Get MetadataTemplate`);
   var getCurApiUserIdsOptions = {
@@ -207,11 +206,12 @@ exports.getCurApiUserId = async function getCurApiUserId(
 
 //***** getExistingLinks is currently unused
 exports.getExistingLinks = async function getExistingLinks(
-  accountIdSecrets,
   theAssetId,
   metadataTemplateId,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
+
   // This function will get the existing links of a given primary asset and only return the ones that have a created by of the API user ID and are a localized version of the primary asset
   console.log(`Begin Get getExistingLinks`);
   var getExistingLinksOptions = {
@@ -226,7 +226,6 @@ exports.getExistingLinks = async function getExistingLinks(
   };
 
   const curApiUserInfo = await tools.getCurApiUserId(
-    accountIdSecrets,
     nodeFetch
   );
 
@@ -257,7 +256,6 @@ exports.getExistingLinks = async function getExistingLinks(
   for (let i = 0; i < relatedAssetIds.length; i++) {
     const curId = relatedAssetIds[i];
     const fileMetadata = await tools.getMetadataById(
-      accountIdSecrets,
       curId,
       nodeFetch
     );
@@ -307,12 +305,13 @@ exports.getExistingLinks = async function getExistingLinks(
 };
 
 exports.createLink = async function createLink(
-  accountIdSecrets,
   rootAssetId,
   derivativeAssetId,
   linkType,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
+
   console.log(`Start createLink`);
   // create a relationship between the rootAssetId and the derivativeAssetId
   const body = {
@@ -350,10 +349,11 @@ exports.createLink = async function createLink(
 
 exports.getControlledVocabularyValues =
   async function getControlledVocabularyValues(
-    accountIdSecrets,
     controlledVocabularyId,
     nodeFetch
   ) {
+    const accountIdSecrets = process.env.SECRETS;
+
     // GET the controlled vocabulary values.id's for a given controlledVocabularyId
     var getControlledVocabularyValuesOptions = {
       method: "GET",
@@ -382,75 +382,13 @@ exports.getControlledVocabularyValues =
     return data.metadataDocument.values;
   };
 
-exports.createNewAsset = async function createNewAsset(
-  accountIdSecrets,
-  body,
-  tableIndex,
-  nodeFetch
-) {
-  console.log(`Start createNewAsset`);
-  const objIdFieldId = await tools.getMetadataIdsFromSearchField(
-    accountIdSecrets,
-    ["dsk_attrtxt_localized_object_id"],
-    nodeFetch
-  );
-
-  const localizedObjectIdColumn = _.findWhere(
-    body.metadata[tableIndex].metadataDefinitionTableValue[0],
-    {
-      metadataDefinitionId: objIdFieldId.fieldsNamesIdsArr[0].id,
-    }
-  );
-  const localizedObjectIdFoundIndex = _.findLastIndex(
-    body.metadata[tableIndex].metadataDefinitionTableValue[0],
-    {
-      metadataDefinitionId: localizedObjectIdColumn.metadataDefinitionId,
-    }
-  );
-
-  body.metadata[tableIndex].metadataDefinitionTableValue[0][
-    localizedObjectIdFoundIndex
-  ].metadataDefinitionValue = "";
-
-  body.metadata.push({
-    metadataDefinitionId: "some-uuid",
-    metadataDefinitionValue: {
-      valueId: "some-uuid",
-    },
-  });
-
-  // create a new asset
-  var createNewAssetOptions = {
-    method: "POST",
-    url: accountIdSecrets.API_URL + "/asset",
-    headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
-      AccessToken: process.env.TN_ACCESS_TOKEN,
-      Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  };
-
-  const response = await nodeFetch(
-    createNewAssetOptions.url,
-    createNewAssetOptions
-  );
-  if (!response.ok) {
-    throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
-    );
-  }
-  const data = await response.json();
-  return data;
-};
-
 exports.updateTableMetadataByid = async function updateTableMetadataByid(
-  accountIdSecrets,
   existingAssetid,
   theTable,
   nodeFetch
 ) {
+  const accountIdSecrets = process.env.SECRETS;
+
   console.log(`START updateTableMetadataByid`);
   var updateTableMetadataByidOptions = {
     method: "PATCH",
