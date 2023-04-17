@@ -68,23 +68,6 @@
       "values": []
     },
     {
-      "name": "Language Translated List",
-      "searchName": "language_translated_list",
-      "values": [
-        "Yes",
-        "No",
-        "Incomplete"
-      ]
-    },
-    {
-      "name": "Translation Message List",
-      "searchName": "translation_message_list",
-      "values": [
-        "Succeeded",
-        "Failed to process PSD file"
-      ]
-    },
-    {
       "name": "System Dynamic User Profile List",
       "searchName": "system_dynamic_user_profile_list",
       "values": []
@@ -119,132 +102,7 @@
       "searchName": "dsk_attrdate_created_date"
     },
     {
-      "name": "Language Translated",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "controlledVocabulary",
-      "typeahead": false,
-      "visible": true,
-      "searchName": "dsk_attrcv_language_translated",
-      "controlledVocabularySearchName": "language_translated_list"
-    },
-    {
-      "name": "Translation Message",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "controlledVocabulary",
-      "typeahead": false,
-      "visible": true,
-      "searchName": "dsk_attrcv_translation_message",
-      "controlledVocabularySearchName": "translation_message_list"
-    },
-    {
-      "name": "Last Translation Attempt",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "date",
-      "typeahead": false,
-      "visible": true,
-      "searchName": "dsk_attrdate_last_translation_at"
-    },
-    {
-      "name": "Callout 01",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "text",
-      "typeahead": false,
-      "visible": true,
-      "length": 2000,
-      "searchName": "dsk_attrtxt_callout_01"
-    },
-    {
-      "name": "Callout 02",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "text",
-      "typeahead": false,
-      "visible": true,
-      "length": 2000,
-      "searchName": "dsk_attrtxt_callout_02"
-    },
-    {
-      "name": "Callout 03",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "text",
-      "typeahead": false,
-      "visible": true,
-      "length": 2000,
-      "searchName": "dsk_attrtxt_callout_03"
-    },
-    {
-      "name": "Callout 04",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "text",
-      "typeahead": false,
-      "visible": true,
-      "length": 2000,
-      "searchName": "dsk_attrtxt_callout_04"
-    },
-    {
-      "name": "Callout 05",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "text",
-      "typeahead": false,
-      "visible": true,
-      "length": 2000,
-      "searchName": "dsk_attrtxt_callout_05"
-    },
-    {
-      "name": "Callout 06",
-      "facetable": false,
-      "isMultipleSelect": false,
-      "isRestricted": false,
-      "required": false,
-      "sortByHitCount": false,
-      "techMetaMapping": "",
-      "type": "text",
-      "typeahead": false,
-      "visible": true,
-      "length": 2000,
-      "searchName": "dsk_attrtxt_callout_06"
-    },
-    {
-      "name": "Localized Object Id",
+      "name": "Custom Feature Object Id",
       "facetable": false,
       "isMultipleSelect": false,
       "isRestricted": false,
@@ -255,7 +113,7 @@
       "typeahead": false,
       "visible": true,
       "length": 100,
-      "searchName": "dsk_attrtxt_localized_object_id"
+      "searchName": "dsk_cust_feat_object_id"
     },
     {
       "name": "Text Content",
@@ -593,7 +451,7 @@
   "cascades": [],
   "tables": [
     {
-      "name": "Asset Localization Table",
+      "name": "Custom Feature Table",
       "tableNameVisible": false,
       "visible": true,
       "type": "tableAttribute",
@@ -602,16 +460,7 @@
       "attributeSearchNames": [
         "dsk_attrcv_locale",
         "dsk_attrdate_created_date",
-        "dsk_attrcv_language_translated",
-        "dsk_attrcv_translation_message",
-        "dsk_attrdate_last_translation_at",
-        "dsk_attrtxt_callout_01",
-        "dsk_attrtxt_callout_02",
-        "dsk_attrtxt_callout_03",
-        "dsk_attrtxt_callout_04",
-        "dsk_attrtxt_callout_05",
-        "dsk_attrtxt_callout_06",
-        "dsk_attrtxt_localized_object_id"
+        "dsk_cust_feat_object_id"
       ]
     },
     {
@@ -639,7 +488,7 @@
   ],
   "groups": [
     {
-      "name": "Asset Localization Information",
+      "name": "Custom Feature Information",
       "searchName": "dsk_groupmd_info",
       "attributeSearchNames": [
         "dsk_table_info"
@@ -669,7 +518,7 @@
   ],
   "templates": [
     {
-      "name": "Asset Localization Template",
+      "name": "Custom Feature Template",
       "groupSearchNames": [
         "dsk_groupmd_info",
         "system_group"

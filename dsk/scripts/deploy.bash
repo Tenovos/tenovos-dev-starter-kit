@@ -2,7 +2,7 @@
 
 display_usage() {
   echo "usage: $0 [deploy-environment] [customerId] [customerName] [disambiguator] [core-platform-environment] [setup|teardown] [admin-user-id] [create-metadata-artifacts] [local|jenkins] [create-event] [deploy-bucket] [customer-bucket] [SAFE|UNSAFE]"
-  echo "example: $0 [integ-partner] [1656431277105] [CUSTOMER] [test] [partner] [setup] [some-uuid] [yes] [local] [yes] [partner-integ-deployment-bucket][some-customer-bucket] [SAFE]"
+  echo "example: $0 [integ-partner] [CUSTOMER ID] [CUSTOMER] [test] [partner] [setup] [some-uuid] [yes] [local] [yes] [partner-integ-deployment-bucket][some-customer-bucket] [SAFE]"
   echo "NOTE: this requires you to have AWS profiles set up that match the input for 'environment'"
 }
 
@@ -88,11 +88,9 @@ fi
 TEMPLATE_IMPORT_BUCKET="tenovos-export-metadata-config-$CORE_PLATFORM_ENVIRONMENT_NAME"
 echo "Uploading metadata templates to s3 bucket [$TEMPLATE_IMPORT_BUCKET] at location [$STACK_NAME]"
 ASSET_LOC_TEMPLATE="s3://$TEMPLATE_IMPORT_BUCKET/$STACK_NAME/asset-localization-template.json"
-DERIVATIVE_LOC_TEMPLATE="s3://$TEMPLATE_IMPORT_BUCKET/$STACK_NAME/derivative-localization-template.json"
 
 # Metadata Required for Feature
 aws s3 cp config/asset-localization-template.json $ASSET_LOC_TEMPLATE --profile $CORE_PLATFORM_ENVIRONMENT
-aws s3 cp config/derivative-localization-template.json $DERIVATIVE_LOC_TEMPLATE --profile $CORE_PLATFORM_ENVIRONMENT
 
 # Copy fonts to customer bucket for use with feature
 SAVEIFS=$IFS

@@ -1,5 +1,5 @@
 {
-  "secretName": "1656431277105_uat-enterprise-mt_alt",
+  "secretName": "CUSTOMER ID_uat-enterprise-mt_alt",
   "s3_bucket": "1656902311341-uat-enterprise-mt-contentstore-tenovos-io",
   "s3_region": "us-east-1",
   "s3_destination_prefix": "output-files",
