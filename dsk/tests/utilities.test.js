@@ -9,6 +9,8 @@ require("dotenv").config({ path: __dirname + "/../.env" });
 const assert = require('assert');
 const utilities = require("../src/tools/utilities");
 
+process.env.MODE = "TEST";
+
 // api uuid for user 9d81fedd-cd72-4f5a-bf15-39448cb3477b
 const event = {
   Records: [

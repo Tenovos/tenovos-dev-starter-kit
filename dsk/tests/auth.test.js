@@ -145,6 +145,8 @@ const result = {
   headers: { "content-type": "application/json" },
 };
 
+process.env.MODE = "TEST";
+
 describe('auth tests', () => {
   it('verifies successful login returns success', async () => {
     const fetch = require('jest-fetch-mock');

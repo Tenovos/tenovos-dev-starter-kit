@@ -7,6 +7,7 @@
 
 require("dotenv").config({ path: __dirname + "/../.env" });
 const assert = require('assert');
+const proxy = require('../src/handlers/proxy');
 
 // api uuid for user 9d81fedd-cd72-4f5a-bf15-39448cb3477b
 const event = {
@@ -43,16 +44,32 @@ const result = {
 
 process.env.MODE = "TEST";
 
-describe('lambda handler tests', () => {
-  it('verifies consistent success response', async () => {
-    const handler = require('../src/handlers/handler');
-    const response = await handler.handler(event, null);
-    assert(response.statusCode === result.statusCode);
-  });
-  it('verifies 500 when invalid event is sent', async () => {
-    const handler = require('../src/handlers/handler');
-    const response = await handler.handler(null, null); // this should result in 500
+describe('lambda proxy tests', () => {
+  it('verifies invalid event returns 500', async () => {
+    const proxyUtilities = require('../src/tools/proxy-utilities');
+    jest.spyOn(proxyUtilities, 'isValidEvent').mockReturnValue(false);
+    const response = await proxy.handler(event, null);
+
     assert(response.statusCode === 500);
+  });
+  it('verifies invalid event returns 500', async () => {
+    const proxyUtilities = require('../src/tools/proxy-utilities');
+    jest.spyOn(proxyUtilities, 'isValidEvent').mockReturnValue(true);
+    jest.spyOn(proxyUtilities, 'isConfirmationMessage').mockReturnValue(true);
+    jest.spyOn(proxyUtilities, 'confirmSubscription').mockReturnValue({});
+    const response = await proxy.handler(event, null);
+
+    assert(JSON.parse(response.body).message === "Successfully confirmed subscription");
+  });
+  it('verifies invalid event returns 500', async () => {
+    const proxyUtilities = require('../src/tools/proxy-utilities');
+    jest.spyOn(proxyUtilities, 'isValidEvent').mockReturnValue(true);
+    jest.spyOn(proxyUtilities, 'isConfirmationMessage').mockReturnValue(false);
+    jest.spyOn(proxyUtilities, 'isNotification').mockReturnValue(true);
+    jest.spyOn(proxyUtilities, 'enqueue').mockReturnValue({});
+    const response = await proxy.handler(event, null);
+
+    assert(JSON.parse(response.body).message === "Successfully enqueued message for processing");
   });
 });
 
