@@ -22,6 +22,7 @@ Resources:
       Environment:
         Variables:
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
+          MODE: "CLOUD"
   DskFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
@@ -42,6 +43,7 @@ Resources:
         Variables:
           CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
+          MODE: "CLOUD"
   DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
       DelaySeconds: 0

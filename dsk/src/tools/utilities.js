@@ -23,16 +23,11 @@ exports.getApiEventType = (apiEvent) => {
   try {
     console.log(`api event is next`);
     console.log(JSON.stringify(apiEvent));
-    // const messageObj = JSON.parse(apiEvent.body);
-    // const messageObj = JSON.parse(bodyObj.Message);
 
     const { service, module, action } = apiEvent;
     //
     if (service === "asset" && module === "asset" && action === "update") {
-      console.log(
-        `checking if user [${JSON.parse(process.env.SECRETS).TN_USER_ID
-        }] is permitted`
-      );
+      console.log(`checking if user[${JSON.parse(process.env.SECRETS).TN_USER_ID}] is permitted`);
       if (
         apiEvent.createdBy === JSON.parse(process.env.SECRETS).TN_USER_ID ||
         apiEvent.data.capturedChanges.lastUpdatedBy ===
@@ -79,7 +74,7 @@ exports.getMetadataById = async function getMetadataById(
   nodeFetch
 ) {
   // GET the filename for a given asset Id
-  console.log(`START getMetadataById (${assetId})`);
+  console.log(`START getMetadataById(${assetId})`);
   var getMetadataByIdOptions = {
     method: "GET",
     url: accountIdSecrets.API_URL + "/asset/" + assetId,
@@ -97,7 +92,7 @@ exports.getMetadataById = async function getMetadataById(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();
@@ -111,7 +106,7 @@ exports.searchByObjectId = async function searchByObjectId(
   locale,
   nodeFetch
 ) {
-  console.log(`START searchByObjectId (${assetId})`);
+  console.log(`START searchByObjectId(${assetId})`);
   const body = {
     from: 0,
     limit: 1,
@@ -139,11 +134,11 @@ exports.searchByObjectId = async function searchByObjectId(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();
-  console.log(`SUCCESS searchByObjectId (${assetId})`);
+  console.log(`SUCCESS searchByObjectId(${assetId})`);
   return data;
 };
 
@@ -172,7 +167,7 @@ exports.getMetadataTemplate = async function getMetadataTemplate(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();
@@ -203,7 +198,7 @@ exports.getCurApiUserId = async function getCurApiUserId(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();
@@ -242,7 +237,7 @@ exports.getExistingLinks = async function getExistingLinks(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const allAssetLinks = await response.json();
@@ -344,7 +339,7 @@ exports.createLink = async function createLink(
   const response = await nodeFetch(createLinkOptions.url, createLinkOptions);
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();
@@ -380,7 +375,7 @@ exports.getControlledVocabularyValues =
     );
     if (!response.ok) {
       throw new Error(
-        `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+        `HTTP error! status: ${response.status} statusText: ${response.statusText} `
       );
     }
     const data = await response.json();
@@ -443,7 +438,7 @@ exports.createNewAsset = async function createNewAsset(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();
@@ -475,7 +470,7 @@ exports.updateTableMetadataByid = async function updateTableMetadataByid(
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText}`
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
     );
   }
   const data = await response.json();

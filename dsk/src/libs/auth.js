@@ -12,15 +12,16 @@ const tools = require("../tools/utilities");
 const appAuth = require("./auth");
 const publishIngAccount = process.env.PUBLISHING_ACCOUNT;
 const secret_name = process.env.CUSTOMER_ID + "_" + publishIngAccount + "_dsk";
-console.log("🚀 ~ file: auth.js:15 ~ secret_name:", secret_name);
 
 exports.setEnv = async function setEnv() {
-  tools.writeStatus(
-    `Start. Get Secrets from AWS secrets manager: ${secret_name}`
-  );
-  const accountIdSecrets = await appAuth.getAwsSecrets(secret_name);
-
-  process.env.SECRETS = JSON.stringify(accountIdSecrets); //must be stringified to store in env
+  if (process.env.MODE === "CLOUD") {
+    console.log(`In cloud mode, setting environment with secret named ${secret_name}`);
+    const accountIdSecrets = await appAuth.getAwsSecrets(secret_name);
+    process.env.SECRETS = JSON.stringify(accountIdSecrets); //must be stringified to store in env
+  }
+  else {
+    console.log(`In local mode, setting environment via dotenv ${JSON.stringify(process.env)}`);
+  }
 };
 
 //GET secrets
@@ -67,7 +68,7 @@ exports.parseSecretsByaccountId = async function parseSecretsByaccountId(
 
 /* PSD API config for @adobe/jwt-auth */
 exports.buildJWTConfig = async function buildJWTConfig(accountIdSecrets) {
-  tools.writeStatus("buildJWTConfig PS API");
+  console.log("buildJWTConfig PS API");
   // get last element of claim to use as metaScope
   const claim = accountIdSecrets.PSD_CLAIM;
   const metaScope = claim.split("/").pop();
@@ -83,7 +84,7 @@ exports.buildJWTConfig = async function buildJWTConfig(accountIdSecrets) {
 
 // GET the Tenevos Token
 exports.tenevosAuth = async function tenevosAuth(accountIdSecrets, fetch) {
-  tools.writeStatus("1. AUTH Tenovos");
+  console.log("1. AUTH Tenovos");
   var options = {
     method: "POST",
     url: accountIdSecrets.API_URL + "/auth/token",
@@ -111,6 +112,6 @@ exports.tenevosAuth = async function tenevosAuth(accountIdSecrets, fetch) {
   process.env.TN_ACCESS_TOKEN = data.session.accessToken;
   process.env.TN_AUTHORIZATION = data.session.authorization;
 
-  tools.writeStatus("AUTH Tenovos SUCCESS");
+  console.log("AUTH Tenovos SUCCESS");
   return data;
 };
