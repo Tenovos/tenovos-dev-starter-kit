@@ -1,0 +1,21 @@
+pipeline {
+  agent { label 'ecs-service' }
+  environment {                                          
+    NPM_AUTH_KEY = credentials('npm-auth-key')
+    SLACK_TOKEN = credentials('slack-token')
+    ACCOUNT_IDS = credentials('jenkins-ecs-aws-account-ids')
+  }
+  stages {
+    stage('Deploy') { 
+      steps {
+        script {
+            slackSend channel: '#auto-dsk', color: 'good', message: "DEPLOY: Deploying dsk..."
+            sh "chmod +x -R ${WORKSPACE}/dsk/scripts/*"
+            sh 'echo //registry.npmjs.org/:_authToken=${NPM_AUTH_KEY} > ~/.npmrc'
+            sh label: 'Set AWS profiles', script: 'dsk/scripts/config-aws-profile.bash ${ACCOUNT_IDS}'
+            sh 'dsk/scripts/deploy.bash' + ' ' + params.DEST_AWS_ACCT + ' ' + params.CUSTOMER_ID + ' ' + params.CUSTOMER_NAME + ' ' + params.DISAMBIGUATOR + ' ' + params.CORE_PLATFORM_ACCOUNT + ' ' + params.ACTION + ' ' + params.API_USER_ID + ' ' + params.CREATE_METADATA + ' jenkins ' + params.CREATE_EVENT + ' ' + params.DEPLOY_BUCKET + ' ' + params.CUSTOMER_BUCKET + ' ' + ' UNSAFE'
+        }
+      }
+    }
+  }
+}

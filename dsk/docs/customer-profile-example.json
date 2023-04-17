@@ -1,0 +1,203 @@
+{
+  "name": "avengersdev",
+  "webUI": {
+    "insightsDashboardIds": [],
+    "rightsManagementEnabled": false,
+    "rightsManagementAdminEmail": ""
+  },
+  "upload": {
+    "rendition": {}
+  },
+  "baseUrl": "https://avengersdev.app.tenovos.partners",
+  "s3Bucket": "1675095062185-partner-contentstore-tenovos-io",
+  "textract": {
+    "enabled": "true"
+  },
+  "customerId": "1675095062185",
+  "contactCity": "New York",
+  "contactName": "avengersdev",
+  "integrators": {
+    "external": [
+      {
+        "name": "asm-events-queue",
+        "events": [],
+        "publishTo": "SQS"
+      },
+      {
+        "name": "download-request",
+        "events": [
+          {
+            "action": "action",
+            "module": "asset",
+            "service": "asset"
+          },
+          {
+            "action": "update",
+            "module": "asset",
+            "service": "asset"
+          }
+        ],
+        "publishTo": "https://d1kjisao1y8ihq.cloudfront.net/tnvs-download-request-event-listener"
+      }
+    ],
+    "internal": [
+      {
+        "name": "duplicate-checker",
+        "events": [
+          {
+            "action": "fileChanged",
+            "module": "content",
+            "service": "asset"
+          }
+        ],
+        "publishTo": "lambda"
+      }
+    ]
+  },
+  "rekognition": {
+    "enabled": "true",
+    "aiTagMetaAttrId": "95576527-6a64-42c1-a739-845522547d9b"
+  },
+  "contactEmail": "avengersdev-admin@tenovos.io",
+  "contactState": "NY",
+  "userCreation": {
+    "modes": [
+      "federated",
+      "local"
+    ],
+    "cognitoPoolId": "us-east-1_QV2NZZ9Ak"
+  },
+  "contactNumber": "123 456 7890",
+  "contactAddress": "500 7th Ave",
+  "contactCountry": "U.S",
+  "contactZipcode": "10018",
+  "disabledFeatures": {
+    "api": {
+      "privileges": [
+        {
+          "id": "a537caed-2b3b-4419-af49-7c709bbf6ed2",
+          "name": "Clone Asset"
+        }
+      ]
+    },
+    "channel": {
+      "id": "8a4ef566-d3dc-4709-bf2c-854b403422a5",
+      "name": "Channel",
+      "privileges": [
+        {
+          "id": "733cd93d-76ae-4df3-8174-8f1342d560db",
+          "name": "Channel Admin"
+        },
+        {
+          "id": "6d0532fd-0e24-45b9-a56a-341e45273b36",
+          "name": "Channel Publish"
+        }
+      ]
+    },
+    "proofing": {
+      "id": "8e50ccc8-446e-46d5-8ab5-4190ac71469d",
+      "name": "Proofing",
+      "privileges": [
+        {
+          "id": "b1be8015-bb3c-4142-bb2e-6a705a94329c",
+          "name": "Proof Admin"
+        },
+        {
+          "id": "ff8b3d6c-6bb7-4ef4-87b1-e645fde887fb",
+          "name": "Proof Initiation"
+        },
+        {
+          "id": "88546766-6211-47c4-b0b8-84a1bef152fe",
+          "name": "Proof Submission Management"
+        },
+        {
+          "id": "81a080e1-d74d-43e8-8224-2d66321d347a",
+          "name": "Proof Modification"
+        },
+        {
+          "id": "0e71ad72-482c-4980-a48a-08728a0060f0",
+          "name": "Proof Participation"
+        },
+        {
+          "id": "47b07d46-c3fb-43f8-a5d1-7c6f3ccd7571",
+          "name": "Upload With Approval"
+        },
+        {
+          "id": "35a6f218-eb26-4673-8420-e89f659ca341",
+          "name": "Proof Admin Inbox"
+        }
+      ],
+      "permissions": [
+        {
+          "id": "49e9045e-845c-41f0-8f80-10a508874d01",
+          "name": "Proof Initiation"
+        }
+      ]
+    },
+    "productStore": {
+      "id": "2987c79d-59a2-457a-9b36-ac6792bfa976",
+      "name": "Product Store Management",
+      "privileges": [
+        {
+          "id": "5513cc30-e91c-44da-a7bf-1050a8b005e3",
+          "name": "Product Store Management"
+        }
+      ]
+    },
+    "templateStore": {
+      "id": "cea969cb-ab2a-48de-82be-40fcf585f7b9",
+      "name": "Template Store Management",
+      "privileges": [
+        {
+          "id": "fe4c3b51-8b83-4678-8d06-88fd6fee8661",
+          "name": "Template Store Management"
+        }
+      ]
+    },
+    "supportingDocuments": {
+      "id": "e936e9dd-39c4-47cb-9913-e5253efbbb51",
+      "name": "Supporting Documents",
+      "privileges": [
+        {
+          "id": "f092bcf6-6590-4794-9051-671dd23beb73",
+          "name": "Supporting Documents"
+        }
+      ]
+    },
+    "externalLibraryAccess": {
+      "privileges": [
+        {
+          "id": "01a1d987-2cac-47b0-9248-c9999eac94df"
+        }
+      ]
+    },
+    "saveGettyAssetToContentStore": {
+      "name": "Save Getty Assets To Content Store",
+      "privileges": [
+        {
+          "id": "564753d8-2502-485b-a997-2e442020535a",
+          "name": "Save Getty Assets To Content Store"
+        }
+      ]
+    }
+  },
+  "velocityTemplate": {
+    "assetShare": {
+      "body": "<html><body> Dear #if($recipients.length == 1 && !$recipients[0].name.empty) $recipients[0].name, #else User(s), #end<br><br>$sender.name shared asset(s) with you. #if($velocityTemplate.data.note != \"\") <br> Message from $sender.name:<br>$velocityTemplate.data.note<br> #end<br><a href=\"https://{CustomerNAME}.app.tenovos.io/#/collection/$velocityTemplate.data.collectionId\">Click here to view</a><br><br>Have a good day!<br>Automated email<i>Unfortunately, this email is an automated notification, which is unable to receive replies. <br />We are happy to help you with any questions or concerns you may have. Please contact us <br />directly 24/7 via customerservice@tenovos.io</i><br><br><img src=\"https://content.tenovos.partners/web/branding/customer/header-logo.png\" width=\"200\"/><br></body></html>",
+      "subject": "Assets have been shared by $sender.name"
+    },
+    "assetExpiryEmail": {
+      "body": "<html><body>Dear User(s),<br><br>#if($velocityTemplate.data.presignedURL && !$velocityTemplate.data.presignedURL.empty)The following asset(s) will expire in the next 30 days. <br> <a href=\"$velocityTemplate.data.presignedURL\">Click here to view</a> #end #if($velocityTemplate.data.message && !$velocityTemplate.data.message.empty) $velocityTemplate.data.message<br> #end <br><br>Have a good day!<br>Automated email<br><br><i>Unfortunately, this email is an automated notification, which is unable to receive replies. <br />We are happy to help you with any questions or concerns you may have. </body></html>",
+      "subject": "Asset Expiration Report #if($velocityTemplate.data.currentDate && ! $velocityTemplate.data.currentDate.empty)($velocityTemplate.data.currentDate) #end"
+    },
+    "thirdPartyIngest": {
+      "body": "<!DOCTYPE html><html><body>Dear User(s),<br><br>#if($velocityTemplate.data.presignedURL && !$velocityTemplate.data.presignedURL.empty)The following asset(s) have been actioned. Click here to see the status of the asset(s) submitted.<br> <a href=\"$velocityTemplate.data.presignedURL\">Click here to view</a> #end #if($velocityTemplate.data.message && !$velocityTemplate.data.message.empty) $velocityTemplate.data.message<br> #end <br><br>Have a good day!<br>Automated email<br><br><i>Unfortunately, this email is an automated notification, which is unable to receive replies. </i><br><br><img src=\"https://content.tenovos.partners/web/branding/customer/header-logo.png\" /></body></html>",
+      "subject": "Assets have been actioned"
+    },
+    "assetTransformationShare": {
+      "body": "<body>Dear User(s),<br><br>$sender.name has shared asset transformation(s) with you. <br>#if($velocityTemplate.data.message && !$velocityTemplate.data.message.empty) $sender.name says:<br>$velocityTemplate.data.message<br> #end<br>#if($velocityTemplate.data.presignedURL && !$velocityTemplate.data.presignedURL.empty) <a href=\"$velocityTemplate.data.presignedURL\">Click here to view</a> #end <br><br>Have a good day!<br>Automated email<br><br><i>Unfortunately, this email is an automated notification, which is unable to receive replies. <br />We are happy to help you with any questions or concerns you may have. </body></html>",
+      "subject": "Assets Transformations Shared With You"
+    }
+  },
+  "allowRequestDownload": true
+}
