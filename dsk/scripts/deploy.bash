@@ -209,7 +209,7 @@ then
   if [ "$CREATE_METADATA" = "yes" ]
   then
     echo "Creating localization templates in tenant..."
-    AWS_PROFILE=$CORE_PLATFORM_ENVIRONMENT node src/setup.js test create-metadata $CUSTOMER_ID $STACK_NAME $ADMIN_USER_ID
+    AWS_PROFILE=$CORE_PLATFORM_ENVIRONMENT node scripts/setup.js test create-metadata $CUSTOMER_ID $STACK_NAME $ADMIN_USER_ID
   fi
 
   export SECRET_NAME="$CUSTOMER_ID"_"$CORE_PLATFORM_ENVIRONMENT_NAME"_dsk

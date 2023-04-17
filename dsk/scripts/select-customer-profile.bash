@@ -42,5 +42,5 @@ RESULT=`aws rds-data execute-statement --secret-arn $AURORA_SECRET_ARN --databas
 PROFILE_DOC=`echo $RESULT | jq '.records | .[] | .[] | .stringValue'`
 echo $PROFILE_DOC > profile-doc.json
 
-node src/setup.js "$API_GATEWAY_URL" $ACTION
+node scripts/setup.js "$API_GATEWAY_URL" $ACTION
 

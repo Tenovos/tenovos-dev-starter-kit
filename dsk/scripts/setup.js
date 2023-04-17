@@ -2,7 +2,6 @@ const { readFileSync } = require("fs");
 const {
     InvokeCommand,
     LambdaClient,
-    LogType,
 } = require("@aws-sdk/client-lambda");
 
 const args = process.argv.slice(2);
