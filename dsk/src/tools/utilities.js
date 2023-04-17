@@ -1,18 +1,7 @@
 const _ = require("underscore");
 const moment = require("moment");
-const config = require("../../config/config.json");
 const AWS = require("aws-sdk");
 const tools = require("./utilities");
-
-
-/* Initialize S3 object -- we must use signatureVersion: 'v4' for presigned PUT urls */
-const region = config.s3_region || "us-east-1";
-const bucket = config.s3_bucket;
-const S3 = new AWS.S3({
-  apiVersion: "2006-03-01",
-  signatureVersion: "v4",
-  region,
-});
 
 exports.getApiEventType = (apiEvent) => {
   console.log("entered getapieventtype");
