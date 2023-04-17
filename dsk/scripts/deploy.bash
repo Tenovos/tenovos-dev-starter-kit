@@ -93,13 +93,13 @@ ASSET_LOC_TEMPLATE="s3://$TEMPLATE_IMPORT_BUCKET/$STACK_NAME/asset-localization-
 aws s3 cp config/asset-localization-template.json $ASSET_LOC_TEMPLATE --profile $CORE_PLATFORM_ENVIRONMENT
 
 # Copy fonts to customer bucket for use with feature
-SAVEIFS=$IFS
-IFS=$(echo -en "\n\b")
-for font in `ls fonts`
-do
-  aws s3 cp "fonts/$font" $CUSTOMER_BUCKET --profile uat-enterprise-mt
-done
-IFS=$SAVEIFS
+#SAVEIFS=$IFS
+#IFS=$(echo -en "\n\b")
+#for font in `ls fonts`
+#do
+#  aws s3 cp "fonts/$font" $CUSTOMER_BUCKET --profile uat-enterprise-mt
+#done
+#IFS=$SAVEIFS
 
 
 
