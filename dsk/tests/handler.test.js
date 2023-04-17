@@ -8,7 +8,6 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
 const assert = require('assert');
 
-// const event = {
 //   "resource": "/enter-path-here",
 //   "path": "/enter-path-here",
 //   "httpMethod": "POST",
