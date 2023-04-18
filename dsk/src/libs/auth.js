@@ -34,34 +34,11 @@ exports.getAwsSecrets = async function () {
       })
     );
   } catch (error) {
-    // For a list of exceptions thrown, see
-    // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
     throw error;
   }
 
   const secret = JSON.parse(response.SecretString);
-  secret.PSD_PRIVATE_KEY = secret.PSD_PRIVATE_KEY.replaceAll("|||", "\n");
   return secret;
-};
-
-exports.parseSecretsByaccountId = async function parseSecretsByaccountId(
-  theSecrets,
-  accountId
-) {
-  // now loop through theSecrets and make a new array of just the ones we need for the accont id
-  const tenantSecrets = {};
-  Object.entries(theSecrets).forEach((entry) => {
-    const [key, value] = entry;
-    if (key.startsWith(accountId)) {
-      theKey = key.replace(accountId, "");
-      tenantSecrets[theKey] = value;
-    } else if (key.startsWith("PSD_")) {
-      //Now add the Photoshop API secrets
-      tenantSecrets[key] = value;
-    }
-  });
-
-  return tenantSecrets;
 };
 
 // GET the Tenevos Token
