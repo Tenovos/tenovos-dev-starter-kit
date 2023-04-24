@@ -118,20 +118,20 @@ Resources:
     Type: AWS::SQS::QueuePolicy
 Outputs:
   ApiGatewayUrl:
-    Description: 'URL created by for use with feature DSK'
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/proxy"
+    Description: "URL created by for use with feature DSK"
   CloudwatchHandlerUrl: 
-    Description: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
-    Value: Quick access to handler logs
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to handler logs"
   CloudwatchProxyUrl: 
-    Description: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
-    Value: Quick access to proxy logs
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to proxy logs"
   LambdaHandlerUrl: 
-    Description: "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
-    Value: Quick access to handler lambda
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to handler lambda"
   LambdaProxyUrl: 
-    Description: "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
-    Value: Quick access to proxy lambda
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to proxy lambda"
   SqsUrl:
-    Description: "https://${AWS::Region}.console.aws.amazon.com/sqs/v2/home?region=${AWS::Region}#/queues/https%3A%2F%2Fsqs.${AWS::Region}.amazonaws.com%2F${AWS::AccountId}%2F_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
-    Value: Quick access to queue
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/sqs/v2/home?region=${AWS::Region}#/queues/https%3A%2F%2Fsqs.${AWS::Region}.amazonaws.com%2F${AWS::AccountId}%2F_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to queue"
