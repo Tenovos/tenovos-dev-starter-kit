@@ -23,10 +23,10 @@ Resources:
         Variables:
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
           MODE: "CLOUD"
-  DskFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+  DskHandlerFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: 'dsk-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      FunctionName: 'dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       Handler: ./src/handlers/handler.handler
       Runtime: nodejs16.x
       Timeout: 300
@@ -69,6 +69,16 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
+########################################################################################################
+#  When it comes time to allow a developer access to the infrastructure created in this template,      #
+#  the below can be added to the trust policy manually with the developers specific login information  #
+########################################################################################################
+#          - Action:
+#              - sts:AssumeRole
+#            Effect: Allow
+#            Principal:
+#              AWS:
+#                - arn:aws:iam::277892082798:user/ian-test@tenovos.com
         Version: '2012-10-17'
       Path: /
       Policies:
@@ -79,11 +89,17 @@ Resources:
                   - sqs:*            
                 Resource: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
               - Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
+                  - logs:*
                 Effect: Allow
-                Resource: '*'
+                Resource: 
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
+              - Effect: Allow
+                Action:
+                  - lambda:*            
+                Resource: 
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:dsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
             Version: '2012-10-17'
           PolicyName: dsk-policy-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
       RoleName: dsk-role-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
@@ -104,3 +120,18 @@ Outputs:
   ApiGatewayUrl:
     Description: 'URL created by for use with feature DSK'
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/proxy"
+  CloudwatchHandlerUrl: 
+    Description: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Value: Quick access to handler logs
+  CloudwatchProxyUrl: 
+    Description: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Value: Quick access to proxy logs
+  LambdaHandlerUrl: 
+    Description: "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Value: Quick access to handler lambda
+  LambdaProxyUrl: 
+    Description: "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Value: Quick access to proxy lambda
+  SqsUrl:
+    Description: "https://${AWS::Region}.console.aws.amazon.com/sqs/v2/home?region=${AWS::Region}#/queues/https%3A%2F%2Fsqs.${AWS::Region}.amazonaws.com%2F${AWS::AccountId}%2F_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Value: Quick access to queue
