@@ -53,14 +53,14 @@ exports.assetValidated = async function validateAsset(asset) {
   return true;
 };
 
-exports.getMetadataById = async function getMetadataById(
+exports.getAsset = async function getAsset(
   assetId,
   nodeFetch
 ) {
   const accountIdSecrets = process.env.SECRETS;
   // GET the filename for a given asset Id
-  console.log(`START getMetadataById(${assetId})`);
-  var getMetadataByIdOptions = {
+  console.log(`START getAsset(${assetId})`);
+  var getAssetOptions = {
     method: "GET",
     url: accountIdSecrets.API_URL + "/asset/" + assetId,
     headers: {
@@ -72,8 +72,8 @@ exports.getMetadataById = async function getMetadataById(
   };
 
   const response = await nodeFetch(
-    getMetadataByIdOptions.url,
-    getMetadataByIdOptions
+    getAssetOptions.url,
+    getAssetOptions
   );
   if (!response.ok) {
     throw new Error(
@@ -81,7 +81,7 @@ exports.getMetadataById = async function getMetadataById(
     );
   }
   const data = await response.json();
-  console.log(`SUCESS Getting Root Metadata for ${assetId}`);
+  console.log(`SUCCESS Getting Root Metadata for ${assetId}`);
   return data;
 };
 
@@ -244,7 +244,7 @@ exports.getExistingLinks = async function getExistingLinks(
   const cleanedRelatedAssets = [];
   for (let i = 0; i < relatedAssetIds.length; i++) {
     const curId = relatedAssetIds[i];
-    const fileMetadata = await tools.getMetadataById(
+    const fileMetadata = await tools.getAsset(
       curId,
       nodeFetch
     );

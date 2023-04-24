@@ -129,22 +129,22 @@ describe('small utility tests', () => {
 });
 
 describe('test api calls', () => {
-  it('verifies getMetadataById api call returns success object', async () => {
+  it('verifies getAsset api call returns success object', async () => {
     const fetch = require('jest-fetch-mock');
     jest.setMock('node-fetch', fetch);
     fetch.mockResponse(JSON.stringify({ ok: true, message: 'YATTA!', json: async () => { return 'test' } }));
-    const response = await utilities.getMetadataById('test', fetch);
+    const response = await utilities.getAsset('test', fetch);
     console.log(response);
     assert(response);
   });
-  it('verifies getMetadataById api throws error if response fails', async () => {
+  it('verifies getAsset api throws error if response fails', async () => {
 
     const fetch = require('jest-fetch-mock');
     jest.setMock('node-fetch', fetch);
     fetch.mockResponse(JSON.stringify({ ok: false, message: 'YATTA!', json: async () => { return 'test' } }));
 
     try {
-      const response = await utilities.getMetadataById('test', fetch);
+      const response = await utilities.getAsset('test', fetch);
       fail();
     } catch (e) {
       //success
