@@ -1,5 +1,5 @@
 
-const utilities = require('tools/utilities');
+const utilities = require('./tools/utilities');
 
 exports.someBusinessLogic = async function someBusinessLogic(assetId) {
   console.log("I have been executed...sort of...");
