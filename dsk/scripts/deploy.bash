@@ -185,7 +185,7 @@ then
   cp "$pwdesc/template-backup.yml" "$pwdesc/template.yml"
 
   echo "Getting api gateway URL from stack deployment"
-  API_GATEWAY_URL=`aws cloudformation describe-stacks --stack-name $STACK_NAME --profile $ENVIRONMENT | jq -r '.Stacks | .[] | .Outputs | .[] | .OutputValue'`
+  API_GATEWAY_URL=`aws cloudformation describe-stacks --stack-name $STACK_NAME --profile $ENVIRONMENT | jq -r '.Stacks | .[] | .Outputs[] | select(.OutputKey == "ApiGatewayUrl").OutputValue'`
 
   echo "Got URL $API_GATEWAY_URL"
   echo "Updating customer profile with the events required for DSK to work"
