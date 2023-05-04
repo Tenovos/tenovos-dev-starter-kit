@@ -47,7 +47,7 @@ ENVIRONMENT=$1
 CUSTOMER_ID=$2
 CUSTOMER_NAME=$3
 GIT_COMMIT_SHA=`git rev-parse HEAD`
-BRANCH_NAME=`git log -n 1 --pretty=%d HEAD`
+BRANCH_NAME=`git log -n 1 --pretty=%d HEAD | awk -F/ '{print $2}' | awk -F\) '{print $1}'`
 DISAMBIGUATOR=$4
 CORE_PLATFORM_ENVIRONMENT=$5
 ACTION=$6
