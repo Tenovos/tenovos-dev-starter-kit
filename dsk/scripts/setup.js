@@ -17,7 +17,7 @@ const region = "us-east-1";
 
 const dskEvent = {
     name: `${featureName}`,
-    events: JSON.parse(config.events),
+    events: config.events,
     publishTo: `${apiGatewayUrl}`,
 };
 
