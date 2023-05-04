@@ -3,6 +3,7 @@ const {
     InvokeCommand,
     LambdaClient,
 } = require("@aws-sdk/client-lambda");
+const config = require('../config/event-config.json');
 
 const args = process.argv.slice(2);
 const apiGatewayUrl = args[0];
@@ -11,12 +12,12 @@ const customerId = args[2];
 const configLocation = args[3]; // s3 prefix where configs files are stored
 const userId = args[4]; // admin user id
 
-const featureName = "feature-dsk";
+const featureName = config.featureName;
 const region = "us-east-1";
 
 const dskEvent = {
     name: `${featureName}`,
-    events: [{ action: "update", module: "asset", service: "asset" }],
+    events: JSON.parse(config.events),
     publishTo: `${apiGatewayUrl}`,
 };
 

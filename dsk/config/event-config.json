@@ -1,0 +1,11 @@
+{
+    "comment": "This is a feature specific set of events and an event name specific to a feature",
+    "featureName": "feat-ils",
+    "events": [
+        {
+            "action": "action",
+            "module": "asset",
+            "service": "asset"
+        }
+    ]
+}
