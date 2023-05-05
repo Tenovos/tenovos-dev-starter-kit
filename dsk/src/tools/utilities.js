@@ -114,7 +114,7 @@ exports.getAsset = async function getAsset(
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
   // GET the filename for a given asset Id
   console.log(`START getAsset(${assetId})`);
-  var getAssetOptions = {
+  const getAssetOptions = {
     method: "GET",
     url: accountIdSecrets.API_URL + "/asset/" + assetId,
     headers: {
@@ -124,7 +124,7 @@ exports.getAsset = async function getAsset(
       "Content-Type": "application/json",
     },
   };
-
+  console.log(`options: ${JSON.stringify(getAssetOptions)}`);
   const response = await nodeFetch(
     getAssetOptions.url,
     getAssetOptions

@@ -16,6 +16,7 @@ exports.handler = async (event, context) => {
 
       if (!event) throw new Error();
       const stage = tools.getStage(body);
+      await appAuth.tenevosAuth(fetch);
       if (stage === "initial") {
         const response = await tools.extractAssetsFromAction(body.data.objectId);
       }
