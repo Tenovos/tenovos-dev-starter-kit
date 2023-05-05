@@ -1,7 +1,7 @@
 
-const utilities = require('./tools/utilities');
+const utilities = require('../../src/tools/utilities');
 const fetch = require("node-fetch");
-const appAuth = require("./libs/auth.js");
+const appAuth = require("../../src/libs/auth");
 
 exports.someBusinessLogic = async function someBusinessLogic(assetId) {
     console.log("I have been executed...sort of...");

@@ -2,6 +2,60 @@ const _ = require("underscore");
 const moment = require("moment");
 const AWS = require("aws-sdk");
 const tools = require("./utilities");
+const fetchLocal = require("node-fetch");
+
+exports.extractAssetsFromAction = async (actionId) => {
+  const action = await this.getAsset(actionId, fetchLocal);
+  console.log(`Action: ${JSON.stringify(action)}`);
+}
+
+exports.getStage = (apiEvent) => {
+  let stage = null;
+  try {
+    const { action } = apiEvent;
+    if (action && action === "action") {
+      stage = "initial";
+    } else if (apiEvent.stage === "process-asset") {
+      stage = "process-asset";
+    } else {
+      stage = "unknown";
+    }
+  } catch (e) {
+    console.log("Error in getStage");
+    return "unknown";
+  }
+  return stage;
+};
+
+exports.getCollection = async function getCollection(
+  id,
+  nodeFetch
+) {
+  const accountIdSecrets = JSON.parse(process.env.SECRETS);
+  console.log(`START ${id}`);
+  const options = {
+    method: "GET",
+    url: accountIdSecrets.API_URL + "/collection/" + id,
+    headers: {
+      "X-API-Key": accountIdSecrets.API_KEY,
+      AccessToken: process.env.TN_ACCESS_TOKEN,
+      Authorization: process.env.TN_AUTHORIZATION,
+      "Content-Type": "application/json",
+    },
+  };
+
+  const response = await nodeFetch(
+    options.url,
+    options
+  );
+  if (!response.ok) {
+    throw new Error(
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+    );
+  }
+  const data = await response.json();
+  return data;
+};
 
 exports.getApiEventType = (apiEvent) => {
   console.log("entered getapieventtype");
@@ -11,7 +65,7 @@ exports.getApiEventType = (apiEvent) => {
 
     const { service, module, action } = apiEvent;
     //
-    if (service === "asset" && module === "asset" && action === "update") {
+    if (service === "asset" && module === "asset" && action === "action") {
       console.log(`checking if user[${JSON.parse(process.env.SECRETS).TN_USER_ID}] is permitted`);
       if (
         apiEvent.createdBy === JSON.parse(process.env.SECRETS).TN_USER_ID ||
@@ -57,7 +111,7 @@ exports.getAsset = async function getAsset(
   assetId,
   nodeFetch
 ) {
-  const accountIdSecrets = process.env.SECRETS;
+  const accountIdSecrets = JSON.parse(process.env.SECRETS);
   // GET the filename for a given asset Id
   console.log(`START getAsset(${assetId})`);
   var getAssetOptions = {

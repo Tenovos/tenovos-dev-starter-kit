@@ -1,4 +1,4 @@
-const app = require("../../custom/src/custom");
+const custom = require("../../custom/src/custom");
 const tools = require("../tools/utilities");
 const appAuth = require("../libs/auth");
 
@@ -15,9 +15,13 @@ exports.handler = async (event, context) => {
       const body = JSON.parse(bodyString);
 
       if (!event) throw new Error();
+      const stage = tools.getStage(body);
+      if (stage === "initial") {
+        const response = await tools.extractAssetsFromAction(body.data.objectId);
+      }
       const theResponse = tools.getApiEventType(body);
       if (theResponse) {
-        await app.someBusinessLogic(body.data.objectId);
+        await custom.someBusinessLogic(body.customerId, body.data.objectId);
       } else {
         throw new Error();
       }

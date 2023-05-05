@@ -41,10 +41,9 @@ exports.getAwsSecrets = async function () {
   return secret;
 };
 
-// GET the Tenevos Token
 exports.tenevosAuth = async function tenevosAuth(fetch) {
-  const accountIdSecrets = process.env.SECRETS;
-  console.log("1. AUTH Tenovos");
+  const accountIdSecrets = JSON.parse(process.env.SECRETS);
+  console.log(`accountIdSecrets -> ${accountIdSecrets}`);
   var options = {
     method: "POST",
     url: accountIdSecrets.API_URL + "/auth/token",
