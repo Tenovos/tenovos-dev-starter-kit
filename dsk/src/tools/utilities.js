@@ -6,7 +6,7 @@ const tools = require("./utilities");
 exports.getApiEventType = (apiEvent) => {
   console.log("entered getapieventtype");
   try {
-    console.log(`api event is next`);
+    console.log(`api event is next ${JSON.stringify(apiEvent)}`);
     console.log(JSON.stringify(apiEvent));
 
     const { service, module, action } = apiEvent;

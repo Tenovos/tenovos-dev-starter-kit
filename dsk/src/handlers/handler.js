@@ -1,4 +1,4 @@
-const app = require("../app");
+const app = require("../../custom/src/custom");
 const tools = require("../tools/utilities");
 const appAuth = require("../libs/auth");
 

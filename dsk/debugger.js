@@ -4,15 +4,15 @@ const aws = require("aws-sdk");
 
 (async () => {
   try {
-    const lambda = new aws.Lambda({ region: "us-east-1" });
-    var params = {
-      FunctionName: 'ENTER FUNCTION NAME',
-      ReservedConcurrentExecutions: '0'
-    };
-    lambda.putFunctionConcurrency(params, function (err, data) {
-      if (err) console.log(err, err.stack); // an error occurred
-      else console.log(data);           // successful response
-    });
+    // const lambda = new aws.Lambda({ region: "us-east-1" });
+    // var params = {
+    //   FunctionName: 'ENTER FUNCTION NAME',
+    //   ReservedConcurrentExecutions: '0'
+    // };
+    // lambda.putFunctionConcurrency(params, function (err, data) {
+    //   if (err) console.log(err, err.stack); // an error occurred
+    //   else console.log(data);           // successful response
+    // });
     await entry.handler({
       Records: [
         {
