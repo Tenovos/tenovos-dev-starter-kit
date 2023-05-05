@@ -52,6 +52,7 @@ Resources:
       QueueName: '_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
       VisibilityTimeout: 300
+      DelaySeconds: 30
     Type: AWS::SQS::Queue
   DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:

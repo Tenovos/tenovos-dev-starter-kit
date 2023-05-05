@@ -1,6 +1,7 @@
 const custom = require("../../custom/src/custom");
 const tools = require("../tools/utilities");
 const appAuth = require("../libs/auth");
+const fetchLocal = require("node-fetch");
 
 exports.handler = async (event, context) => {
   console.log(`Event is of type ${typeof event}`);
@@ -16,9 +17,10 @@ exports.handler = async (event, context) => {
 
       if (!event) throw new Error();
       const stage = tools.getStage(body);
-      await appAuth.tenevosAuth(fetch);
+      await appAuth.tenevosAuth(fetchLocal);
       if (stage === "initial") {
         const response = await tools.extractAssetsFromAction(body.data.objectId);
+        console.log(JSON.stringify(response));
       }
       const theResponse = tools.getApiEventType(body);
       if (theResponse) {
