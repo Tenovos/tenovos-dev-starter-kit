@@ -8,13 +8,12 @@ exports.handler = async (event, context) => {
 
     try {
 
-        fs.createReadStream('./csvdemo.csv')
+        fs.createReadStream('../../config/all-event-configs.csv')
             .pipe(csv.parse({ headers: true }))
             .on('error', error => console.error(error))
             .on('data', row => data.push(row))
             .on('end', () => console.log(data));
-        const eventsFile = fs.readFileSync(config, "utf8");
-        const readStream = fs.createReadStream('./indds-and-rels-data.json');
+
 
     } catch (e) {
         console.log(e);
