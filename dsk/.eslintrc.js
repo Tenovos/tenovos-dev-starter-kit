@@ -4,12 +4,13 @@ module.exports = {
     node: true,
     jest: true,
     es2022: true,
+    // es2022: true,
   },
   extends: [
     'airbnb-base',
   ],
   parserOptions: {
-    emcaVersion: 2022,
+    emcaVersion: 13,
     sourceType: 'script',
   },
   rules: {
@@ -35,8 +36,9 @@ module.exports = {
       'error',
       {
         code: 120,
-        ignoreStrings: true,
+        ignoreComments: true,
         ignoreRegExpLiterals: true,
+        ignoreStrings: true,
       },
     ],
     'no-shadow': [

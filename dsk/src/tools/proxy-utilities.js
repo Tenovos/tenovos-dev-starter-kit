@@ -39,9 +39,9 @@ async function enqueue(event) {
   console.log('added to queue', result);
 }
 
-function isValidEvent(event) {
+async function isValidEvent(event) {
   console.log('Confirming event is valid');
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     validator.validate(event.body, (err, message) => {
       if (err) {
         console.error(err);
@@ -101,8 +101,10 @@ function confirmSubscription(event) {
     }
   });
 }
-exports.enqueue = enqueue;
-exports.isValidEvent = isValidEvent;
-exports.isConfirmationMessage = isConfirmationMessage;
-exports.isNotification = isNotification;
-exports.confirmSubscription = confirmSubscription;
+module.exports = {
+  enqueue,
+  isValidEvent,
+  isConfirmationMessage,
+  isNotification,
+  confirmSubscription,
+};

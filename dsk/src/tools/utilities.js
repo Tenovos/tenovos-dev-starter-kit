@@ -4,12 +4,7 @@ const _ = require('underscore');
 const fetchLocal = require('node-fetch');
 // const tools = require('./utilities');
 
-exports.extractAssetsFromAction = async (actionId) => {
-  const action = await this.getAsset(actionId, fetchLocal);
-  console.log(`Action: ${JSON.stringify(action)}`);
-};
-
-exports.getStage = (apiEvent) => {
+const getStage = (apiEvent) => {
   let stage = null;
   try {
     const { action } = apiEvent;
@@ -27,10 +22,7 @@ exports.getStage = (apiEvent) => {
   return stage;
 };
 
-exports.getCollection = async function getCollection(
-  id,
-  nodeFetch,
-) {
+const getCollection = async function getCollection(id, nodeFetch) {
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
   console.log(`START ${id}`);
   const options = {
@@ -66,13 +58,14 @@ const getApiEventType = (apiEvent) => {
     const { service, module, action } = apiEvent;
     //
     if (service === 'asset' && module === 'asset' && action === 'action') {
-      console.log(`checking if user[${JSON.parse(process.env.SECRETS).TN_USER_ID}] is permitted`);
+      const secrets = JSON.parse(process.env.SECRETS);
+      console.log(`checking if user[${secrets.TN_USER_ID}] is permitted`);
       if (
-        apiEvent.createdBy === JSON.parse(process.env.SECRETS).TN_USER_ID
-        || apiEvent.data.capturedChanges.lastUpdatedBy
-        === JSON.parse(process.env.SECRETS).TN_USER_ID
-        || apiEvent.data.capturedChanges.lastUpdatedBy === null
-        || apiEvent.data.capturedChanges.lastUpdatedBy === ''
+        apiEvent.createdBy === secrets.TN_USER_ID
+        || apiEvent.data?.capturedChanges?.lastUpdatedBy
+        === secrets.TN_USER_ID
+        || apiEvent.data?.capturedChanges?.lastUpdatedBy === null
+        || apiEvent.data?.capturedChanges?.lastUpdatedBy === ''
       ) {
         console.log('ignoring message created by api user');
         return false;
@@ -82,7 +75,8 @@ const getApiEventType = (apiEvent) => {
       return true;
     }
     return false;
-  } catch (e) {
+  } catch (error) {
+    console.error('Failed to get Collection:', { collectionId: id }, error);
     return false;
   }
 };
@@ -230,6 +224,13 @@ const getCurApiUserId = async (nodeFetch) => {
   }
   const data = await response.json();
   return data;
+};
+
+const extractAssetsFromAction = async (actionId) => {
+  const action = await getAsset(actionId, fetchLocal);
+  console.log(`Action: ${JSON.stringify(action)}`);
+
+  return action;
 };
 
 //* **** getExistingLinks is currently unused
@@ -418,6 +419,9 @@ const updateTableMetadataByid = async (existingAssetid, theTable, nodeFetch) => 
 
 module.exports = {
   sleep,
+  extractAssetsFromAction,
+  getCollection,
+  getStage,
   assetValidated,
   createLink,
   getApiEventType,

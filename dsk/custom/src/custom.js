@@ -1,9 +1,38 @@
+const enqueue = async (event) => {
+  let customerId = '';
 
-exports.someBusinessLogic = async function someBusinessLogic(customerId, assetId) {
-    try {
-        const customApp = require(`../../custom/src/${customerId}`);
-        customApp.someBusinessLogic(assetId);
-    } catch (error) {
-        console.log('default business logic invoked');
+  try {
+    const body = JSON.parse(event.body);
+    customerId = body?.MessageAttributes?.customerId?.Value || customerId;
+
+    if (!customerId) {
+      throw new Error('customerId not found');
     }
-}
+    // eslint-disable-next-line import/no-dynamic-require, global-require
+    const customApp = require(`./customer/${customerId}/enqueue`);
+    await customApp.enqueue(event);
+  } catch (error) {
+    console.error('Custom Enqueue Error', {
+      customerId,
+      event,
+    }, error);
+  }
+};
+
+const someBusinessLogic = async (customerId, asset, stage) => {
+  try {
+    // eslint-disable-next-line import/no-dynamic-require, global-require
+    const CustomApp = require(`./customer/${customerId}`);
+    await CustomApp.someBusinessLogic(asset, stage);
+  } catch (error) {
+    console.error('Custom Business Logic Error', {
+      customerId,
+      assetId,
+    }, error);
+  }
+};
+
+module.exports = {
+  enqueue,
+  someBusinessLogic,
+};

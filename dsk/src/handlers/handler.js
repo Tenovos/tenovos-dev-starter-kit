@@ -1,7 +1,7 @@
-const fetchLocal = require('node-fetch');
-const custom = require('../../custom/src/custom');
-const tools = require('../tools/utilities');
-const appAuth = require('../libs/auth');
+const FetchLocal = require('node-fetch');
+const Custom = require('../../custom/src/custom');
+const Tools = require('../tools/utilities');
+const AppAuth = require('../libs/auth');
 
 exports.handler = async (event, context) => {
   console.log(`Event is of type ${typeof event}`);
@@ -10,7 +10,7 @@ exports.handler = async (event, context) => {
   let response = null;
 
   try {
-    await appAuth.setEnv();
+    await AppAuth.setEnv();
 
     // let isDone = false;
     // for (let index = 0; index < event.Records.length && !isDone; index += 1) {
@@ -20,15 +20,15 @@ exports.handler = async (event, context) => {
       const body = JSON.parse(bodyString);
 
       if (!event) throw new Error();
-      const stage = tools.getStage(body);
-      await appAuth.tenevosAuth(fetchLocal);
+      const stage = Tools.getStage(body);
+      await AppAuth.tenovosAuth(FetchLocal);
+      let action = null;
       if (stage === 'initial') {
-        response = await tools.extractAssetsFromAction(body.data.objectId);
-        console.log(JSON.stringify(response));
+        action = await Tools.extractAssetsFromAction(body.data.objectId);
       }
-      const theResponse = tools.getApiEventType(body);
+      const theResponse = Tools.getApiEventType(body);
       if (theResponse) {
-        await custom.someBusinessLogic(body.customerId, body.data.objectId);
+        await Custom.someBusinessLogic(body.customerId, action, stage);
       } else {
         throw new Error();
       }

@@ -1,32 +1,17 @@
-const {
-  SecretsManagerClient,
-  GetSecretValueCommand,
-} = require('@aws-sdk/client-secrets-manager');
-
-const client = new SecretsManagerClient({
-  region: 'us-east-1',
-});
-
-const appAuth = require('./auth');
+const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
 
 const publishIngAccount = process.env.PUBLISHING_ACCOUNT;
 const secretName = `${process.env.CUSTOMER_ID}_${publishIngAccount}_dsk`;
 
-exports.setEnv = async function setEnv() {
-  if (process.env.MODE === 'CLOUD') {
-    console.log(`In cloud mode, setting environment with secret named ${secretName}`);
-    const accountIdSecrets = await appAuth.getAwsSecrets(secretName);
-    process.env.SECRETS = JSON.stringify(accountIdSecrets); // must be stringified to store in env
-  } else {
-    console.log(`In local mode, setting environment via dotenv ${JSON.stringify(process.env)}`);
-  }
-};
-
 // GET secrets
-exports.getAwsSecrets = async function () {
+const getAwsSecrets = async () => {
   // let response;
 
   // try {
+  const client = new SecretsManagerClient({
+    region: 'us-east-1',
+  });
+
   const response = await client.send(
     new GetSecretValueCommand({
       SecretId: secretName,
@@ -41,7 +26,17 @@ exports.getAwsSecrets = async function () {
   return secret;
 };
 
-exports.tenevosAuth = async function tenevosAuth(fetch) {
+const setEnv = async () => {
+  if (process.env.MODE === 'CLOUD') {
+    console.log(`In cloud mode, setting environment with secret named ${secretName}`);
+    const accountIdSecrets = await getAwsSecrets(secretName);
+    process.env.SECRETS = JSON.stringify(accountIdSecrets); // must be stringified to store in env
+  } else {
+    console.log(`In local mode, setting environment via dotenv ${JSON.stringify(process.env)}`);
+  }
+};
+
+const tenovosAuth = async (fetch) => {
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
   console.log(`accountIdSecrets -> ${accountIdSecrets}`);
   const options = {
@@ -74,4 +69,10 @@ exports.tenevosAuth = async function tenevosAuth(fetch) {
 
   console.log('AUTH Tenovos SUCCESS');
   return data;
+};
+
+module.exports = {
+  getAwsSecrets,
+  setEnv,
+  tenovosAuth,
 };
