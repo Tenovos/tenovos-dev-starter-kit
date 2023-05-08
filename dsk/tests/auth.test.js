@@ -173,7 +173,7 @@ describe('auth tests', () => {
         },
       }),
     }));
-    const response = await auth.tenevosAuth(fetch);
+    const response = await auth.tenovosAuth(fetch);
     console.log(response);
     assert(response);
   });
@@ -192,7 +192,7 @@ describe('auth tests', () => {
     }));
 
     try {
-      const response = await auth.tenevosAuth(fetch);
+      const response = await auth.tenovosAuth(fetch);
       fail();
     } catch (e) {
       // success
