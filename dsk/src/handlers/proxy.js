@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk');
+// const AWS = require('aws-sdk');
 const proxyUtilities = require('../tools/proxy-utilities');
 
 const handler = async (event) => {
@@ -6,7 +6,7 @@ const handler = async (event) => {
     statusCode: 200,
     headers: {
       'Content-Type': 'text/plain',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
     },
     body: 'ok',
   };
@@ -16,17 +16,18 @@ const handler = async (event) => {
     if (await proxyUtilities.isValidEvent(event)) {
       if (proxyUtilities.isConfirmationMessage(event)) {
         await proxyUtilities.confirmSubscription(event);
-        response.body = `${JSON.stringify({ message: "Successfully confirmed subscription" })}`;
-      }
-      else if (proxyUtilities.isNotification(event)) {
+        response.body = `${JSON.stringify({
+          message: 'Successfully confirmed subscription',
+        })}`;
+      } else if (proxyUtilities.isNotification(event)) {
         await proxyUtilities.enqueue(event);
-        response.body = `${JSON.stringify({ message: "Successfully enqueued message for processing" })}`;
-      }
-      else {
+        response.body = `${JSON.stringify({
+          message: 'Successfully enqueued message for processing',
+        })}`;
+      } else {
         throw new Error('Event appears to be invalid');
       }
-    }
-    else {
+    } else {
       throw new Error('Message appears to be invalid');
     }
   } catch (e) {
@@ -35,6 +36,6 @@ const handler = async (event) => {
     response.body = `${JSON.stringify(e)}`;
   }
   return response;
-}
+};
 
 module.exports.handler = handler;
