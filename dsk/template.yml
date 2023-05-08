@@ -23,6 +23,26 @@ Resources:
         Variables:
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
           MODE: "CLOUD"
+  DskListEventsFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: 'dsk-listevents-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      Handler: ./src/handlers/list-events.handler
+      Runtime: nodejs16.x
+      Timeout: 300
+      MemorySize: 256
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+      Events:
+        Typescript:
+          Type: Api
+          Properties:
+            Path: /list-events
+            Method: any
+      Environment:
+        Variables:
+          QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
+          MODE: "CLOUD"          
   DskHandlerFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:

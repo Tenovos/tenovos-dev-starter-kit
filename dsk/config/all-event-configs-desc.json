@@ -1,0 +1,52 @@
+{
+    "eventDescriptions": [
+        {
+            "service": "asset",
+            "module": "asset",
+            "action": "update",
+            "description": "Asset metadata or security is updated. This can happen via the web ui, bulk tools, api etc."
+        },
+        {
+            "service": "asset",
+            "module": "asset",
+            "action": "renditionUpdate",
+            "description": "Asset rendition is updated. This can happen via replace preview feature, operations reprocessing request, etc."
+        },
+        {
+            "service": "asset",
+            "module": "asset",
+            "action": "softDelete",
+            "description": "Asset is soft deleted via the web ui or the api."
+        },
+        {
+            "service": "asset",
+            "module": "asset",
+            "action": "delete",
+            "description": "Asset is permanently deleted via the web ui."
+        },
+        {
+            "service": "asset",
+            "module": "content",
+            "action": "fileChanged",
+            "description": "A file versioning occurred for a given asset via web ui or interface tools."
+        },
+        {
+            "service": "asset",
+            "module": "asset",
+            "action": "action",
+            "description": "A custom action execution is initiated by the end user most likely, but also possible via api."
+        },
+        {
+            "service": "asset",
+            "module": "bulkEdit",
+            "action": "start",
+            "description": "A bulk edit is initiated via the web ui or the api"
+        },
+        {
+            "service": "asset",
+            "module": "asset",
+            "action": "attachFile",
+            "description": "An asset that previously was metadata only, has a file attached."
+        }
+    ]
+}
