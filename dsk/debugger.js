@@ -266,7 +266,7 @@ const runProxyHandler = async () => {
         await runHandler();
         break;
       case "proxyHandler":
-        await ProxyHandler();
+        await runProxyHandler();
         break;
       default:
         console.log(`Invalid action[${action}]`);
