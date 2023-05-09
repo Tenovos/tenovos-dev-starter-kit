@@ -41,12 +41,12 @@ async function enqueue(event) {
 
   console.log('Skip added to queue');
 
-  // const sqsClient = new AWS.SQS({
-  //   region: 'us-east-1',
-  // });
+  const sqsClient = new AWS.SQS({
+    region: 'us-east-1',
+  });
 
-  // const result = await sqsClient.sendMessage(params).promise();
-  // console.log('added to queue', result);
+  const result = await sqsClient.sendMessage(params).promise();
+  console.log('added to queue', result);
 }
 
 module.exports = {
