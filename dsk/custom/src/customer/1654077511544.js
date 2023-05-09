@@ -117,6 +117,26 @@ const someBusinessLogic = async (asset, stage) => {
   }
 };
 
+const writeObjectToS3 = async (bucket, object) => {
+  console.log(`AWS_PROFILE: ${process.env.AWS_PROFILE}`);
+  const s3 = new AWS.S3({
+    region: 'us-east-1',
+  });
+  console.log(`Writing to s3...${JSON.stringify(object)}`);
+  s3.putObject(
+    {
+      Bucket: bucket,
+      Key: `${object.actionId}/${object.collectionId}/${object.objectId}`,
+      Body: JSON.stringify(object),
+      ContentType: 'application/json',
+    },
+    (err, data) => {
+      console.log(`${JSON.stringify(err)} ${JSON.stringify(data)}`);
+    },
+  );
+};
+
 module.exports = {
   someBusinessLogic,
+  writeObjectToS3,
 };

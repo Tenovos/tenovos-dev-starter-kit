@@ -5,6 +5,7 @@ const listEvents = require("./src/handlers/list-events");
 const aws = require("aws-sdk");
 const Handler = require('./src/handlers/handler');
 const ProxyHandler = require('./src/handlers/proxy');
+const CustomHandler = require('./custom/src/customer/1654077511544');
 
 const args = process.argv.slice(2);
 const action = args[0];
@@ -253,6 +254,11 @@ const runProxyHandler = async () => {
   }
 };
 
+async function debugS3() {
+  console.log("debugging S3");
+  await CustomHandler.writeObjectToS3('dsk-1654077511544ppils-us-east-1', { "actionId": "some-action", "collectionId": "some-collection", "objectId": "some-object" });
+}
+
 (async () => {
   try {
     switch (action) {
@@ -267,6 +273,9 @@ const runProxyHandler = async () => {
         break;
       case "proxyHandler":
         await runProxyHandler();
+        break;
+      case "s3":
+        await debugS3();
         break;
       default:
         console.log(`Invalid action[${action}]`);
