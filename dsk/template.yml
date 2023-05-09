@@ -23,6 +23,7 @@ Resources:
         Variables:
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
           MODE: "CLOUD"
+          PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
   DskListEventsFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
@@ -41,7 +42,6 @@ Resources:
             Method: any
       Environment:
         Variables:
-          QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
           MODE: "CLOUD"          
   DskHandlerFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
@@ -149,6 +149,11 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: dsk-_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1
+  DskDashboard_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+    Type: AWS::CloudWatch::Dashboard
+    Properties: 
+      DashboardBody: dsk-dashboard-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
+      DashboardName: dsk-dashboard-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
 Outputs:
   ApiGatewayUrl:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/proxy"
