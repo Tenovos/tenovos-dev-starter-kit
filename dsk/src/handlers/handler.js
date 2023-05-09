@@ -25,13 +25,15 @@ exports.handler = async (event, context) => {
       let action = null;
       if (stage === 'initial') {
         action = await Tools.extractAssetsFromAction(body.data.objectId);
+      } else if (stage === 'process-asset') {
+        action = body;
       }
-      const theResponse = Tools.getApiEventType(body);
-      if (theResponse) {
-        await Custom.someBusinessLogic(body.customerId, action, stage);
-      } else {
-        throw new Error();
-      }
+      // const theResponse = Tools.getApiEventType(body);
+      // if (theResponse) {
+      await Custom.someBusinessLogic(body.customerId, action, stage);
+      // } else {
+      // throw new Error();
+      // }
 
       response = {
         statusCode: 200,

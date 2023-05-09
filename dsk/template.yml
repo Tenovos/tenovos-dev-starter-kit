@@ -21,9 +21,10 @@ Resources:
             Method: any
       Environment:
         Variables:
-          QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
-          MODE: "CLOUD"
+          CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
+          MODE: "CLOUD"
+          QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
   DskListEventsFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
