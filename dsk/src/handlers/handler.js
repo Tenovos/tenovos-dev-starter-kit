@@ -21,6 +21,7 @@ exports.handler = async (event, context) => {
 
       if (!event) throw new Error();
       const stage = Tools.getStage(body);
+      await AppAuth.setEnv();
       await AppAuth.tenovosAuth(FetchLocal);
       let action = null;
       if (stage === 'initial') {
