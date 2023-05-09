@@ -21,8 +21,6 @@ exports.handler = async (event, context) => {
     try {
         const configArr = await readCsv('./config/all-event-configs.csv');
         for (let i = 0; i < data.length; i++) {
-            //                    console.log(data[i]);
-            //                    console.log(i);
             const line = data[i];
             const configs = JSON.parse(line.configurations);
             for (let j = 0; j < configs.length; j++) {
@@ -41,7 +39,7 @@ exports.handler = async (event, context) => {
                     }
                 }
                 if (service !== "redshiftSync")
-                    responseHtml += `<tr><td>${service}</td><td>${module}</td><td>${action}</td></tr>`;
+                    responseHtml += `<tr><td>${service}</td><td>${module}</td><td>${action}</td><td>${desc}</td></tr>`;
             }
         }
     } catch (e) {
