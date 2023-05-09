@@ -12,7 +12,7 @@ const handler = async (event) => {
   };
 
   try {
-    console.log(event);
+    console.log('Event:', event);
     if (await ProxyUtilities.isValidEvent(event)) {
       if (ProxyUtilities.isConfirmationMessage(event)) {
         await ProxyUtilities.confirmSubscription(event);
