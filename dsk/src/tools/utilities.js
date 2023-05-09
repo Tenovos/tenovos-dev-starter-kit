@@ -1,96 +1,89 @@
-const _ = require("underscore");
-const moment = require("moment");
-const AWS = require("aws-sdk");
-const tools = require("./utilities");
-const fetchLocal = require("node-fetch");
+const _ = require('underscore');
+// const moment = require('moment');
+// const AWS = require('aws-sdk');
+const fetchLocal = require('node-fetch');
+// const tools = require('./utilities');
 
-exports.extractAssetsFromAction = async (actionId) => {
-  const action = await this.getAsset(actionId, fetchLocal);
-  console.log(`Action: ${JSON.stringify(action)}`);
-}
-
-exports.getStage = (apiEvent) => {
+const getStage = (apiEvent) => {
   let stage = null;
   try {
     const { action } = apiEvent;
-    if (action && action === "action") {
-      stage = "initial";
-    } else if (apiEvent.stage === "process-asset") {
-      stage = "process-asset";
+    if (action && action === 'action') {
+      stage = 'initial';
+    } else if (apiEvent.stage === 'process-asset') {
+      stage = 'process-asset';
     } else {
-      stage = "unknown";
+      stage = 'unknown';
     }
   } catch (e) {
-    console.log("Error in getStage");
-    return "unknown";
+    console.log('Error in getStage');
+    return 'unknown';
   }
   return stage;
 };
 
-exports.getCollection = async function getCollection(
-  id,
-  nodeFetch
-) {
+const getCollection = async function getCollection(id, nodeFetch) {
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
   console.log(`START ${id}`);
   const options = {
-    method: "GET",
-    url: accountIdSecrets.API_URL + "/collection/" + id,
+    method: 'GET',
+    url: `${accountIdSecrets.API_URL}/collection/${id}`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
 
   const response = await nodeFetch(
     options.url,
-    options
+    options,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
   return data;
 };
 
-exports.getApiEventType = (apiEvent) => {
-  console.log("entered getapieventtype");
+const getApiEventType = (apiEvent) => {
+  console.log('entered getapieventtype');
   try {
     console.log(`api event is next ${JSON.stringify(apiEvent)}`);
     console.log(JSON.stringify(apiEvent));
 
     const { service, module, action } = apiEvent;
     //
-    if (service === "asset" && module === "asset" && action === "action") {
-      console.log(`checking if user[${JSON.parse(process.env.SECRETS).TN_USER_ID}] is permitted`);
+    if (service === 'asset' && module === 'asset' && action === 'action') {
+      const secrets = JSON.parse(process.env.SECRETS);
+      console.log(`checking if user[${secrets.TN_USER_ID}] is permitted`);
       if (
-        apiEvent.createdBy === JSON.parse(process.env.SECRETS).TN_USER_ID ||
-        apiEvent.data.capturedChanges.lastUpdatedBy ===
-        JSON.parse(process.env.SECRETS).TN_USER_ID ||
-        apiEvent.data.capturedChanges.lastUpdatedBy === null ||
-        apiEvent.data.capturedChanges.lastUpdatedBy === ""
+        apiEvent.createdBy === secrets.TN_USER_ID
+        || apiEvent.data?.capturedChanges?.lastUpdatedBy
+        === secrets.TN_USER_ID
+        || apiEvent.data?.capturedChanges?.lastUpdatedBy === null
+        || apiEvent.data?.capturedChanges?.lastUpdatedBy === ''
       ) {
-        console.log("ignoring message created by api user");
+        console.log('ignoring message created by api user');
         return false;
-      } else {
-        console.log("Processing message created by: " + apiEvent.createdBy);
       }
+      console.log(`Processing message created by: ${apiEvent.createdBy}`);
+
       return true;
-    } else {
-      return false;
     }
-  } catch (e) {
+    return false;
+  } catch (error) {
+    console.error('Failed to get Collection:', { collectionId: id }, error);
     return false;
   }
 };
 
-exports.sleepFor = function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
+const sleep = async (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
 
 /**
  * Responsibilities
@@ -103,35 +96,30 @@ exports.sleepFor = function sleep(ms) {
  * @param {*} nodeFetch
  */
 
-exports.assetValidated = async function validateAsset(asset) {
-  return true;
-};
+const assetValidated = async (asset) => true;
 
-exports.getAsset = async function getAsset(
-  assetId,
-  nodeFetch
-) {
+const getAsset = async (assetId, nodeFetch) => {
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
   // GET the filename for a given asset Id
   console.log(`START getAsset(${assetId})`);
   const getAssetOptions = {
-    method: "GET",
-    url: accountIdSecrets.API_URL + "/asset/" + assetId,
+    method: 'GET',
+    url: `${accountIdSecrets.API_URL}/asset/${assetId}`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
   console.log(`options: ${JSON.stringify(getAssetOptions)}`);
   const response = await nodeFetch(
     getAssetOptions.url,
-    getAssetOptions
+    getAssetOptions,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
@@ -139,42 +127,38 @@ exports.getAsset = async function getAsset(
   return data;
 };
 
-exports.searchByObjectId = async function searchByObjectId(
-  assetId,
-  locale,
-  nodeFetch
-) {
+const searchByObjectId = async (assetId, locale, nodeFetch) => {
   const accountIdSecrets = process.env.SECRETS;
 
   console.log(`START searchByObjectId(${assetId})`);
   const body = {
     from: 0,
     limit: 1,
-    searchTerm: '["' + assetId + '"]',
+    searchTerm: `["${assetId}"]`,
     filters: "['(SomeAttribute:\"SomeValue\")']",
-    operation: "AND",
+    operation: 'AND',
   };
 
   // GET the filename for a given asset Id
-  var searchByObjectIdOptions = {
-    method: "POST",
-    url: accountIdSecrets.API_URL + "/search/keyword",
+  const searchByObjectIdOptions = {
+    method: 'POST',
+    url: `${accountIdSecrets.API_URL}/search/keyword`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
   };
 
   const response = await nodeFetch(
     searchByObjectIdOptions.url,
-    searchByObjectIdOptions
+    searchByObjectIdOptions,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
@@ -182,126 +166,122 @@ exports.searchByObjectId = async function searchByObjectId(
   return data;
 };
 
-exports.getMetadataTemplate = async function getMetadataTemplate(
-  templateId,
-  nodeFetch
-) {
+const getMetadataTemplate = async (templateId, nodeFetch) => {
   const accountIdSecrets = process.env.SECRETS;
 
-  console.log(`Begin Get MetadataTemplate`);
-  //get the Asset Localization table
+  console.log('Begin Get MetadataTemplate');
+  // get the Asset Localization table
   // GET the filename for a given asset Id
-  var getMetadataTemplateOptions = {
-    method: "GET",
-    url: accountIdSecrets.API_URL + "/metadata/template/" + templateId,
+  const getMetadataTemplateOptions = {
+    method: 'GET',
+    url: `${accountIdSecrets.API_URL}/metadata/template/${templateId}`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
 
   const response = await nodeFetch(
     getMetadataTemplateOptions.url,
-    getMetadataTemplateOptions
+    getMetadataTemplateOptions,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
-  console.log(`SUCCESS: Get MetadataTemplate`);
+  console.log('SUCCESS: Get MetadataTemplate');
   return data;
 };
 
-exports.getCurApiUserId = async function getCurApiUserId(
-  nodeFetch
-) {
+const getCurApiUserId = async (nodeFetch) => {
   const accountIdSecrets = process.env.SECRETS;
 
   // console.log(this);
-  console.log(`SUCCESS: Get MetadataTemplate`);
-  var getCurApiUserIdsOptions = {
-    method: "GET",
-    url: accountIdSecrets.API_URL + "/user",
+  console.log('SUCCESS: Get MetadataTemplate');
+  const getCurApiUserIdsOptions = {
+    method: 'GET',
+    url: `${accountIdSecrets.API_URL}/user`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
 
   const response = await nodeFetch(
     getCurApiUserIdsOptions.url,
-    getCurApiUserIdsOptions
+    getCurApiUserIdsOptions,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
   return data;
 };
 
-//***** getExistingLinks is currently unused
-exports.getExistingLinks = async function getExistingLinks(
-  theAssetId,
-  metadataTemplateId,
-  nodeFetch
-) {
+const extractAssetsFromAction = async (actionId) => {
+  const action = await getAsset(actionId, fetchLocal);
+  console.log(`Action: ${JSON.stringify(action)}`);
+
+  return action;
+};
+
+//* **** getExistingLinks is currently unused
+const getExistingLinks = async (theAssetId, metadataTemplateId, nodeFetch) => {
   const accountIdSecrets = process.env.SECRETS;
 
-  // This function will get the existing links of a given primary asset and only return the ones that have a created by of the API user ID and are a localized version of the primary asset
-  console.log(`Begin Get getExistingLinks`);
-  var getExistingLinksOptions = {
-    method: "GET",
-    url: accountIdSecrets.API_URL + "/asset/" + theAssetId + "/link/",
+  // This function will get the existing links of a given primary asset and only return the ones
+  // that have a created by of the API user ID and are a localized version of the primary asset
+  console.log('Begin Get getExistingLinks');
+  const getExistingLinksOptions = {
+    method: 'GET',
+    url: `${accountIdSecrets.API_URL}/asset/${theAssetId}/link/`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   };
 
-  const curApiUserInfo = await tools.getCurApiUserId(
-    nodeFetch
-  );
+  // const curApiUserInfo = await getCurApiUserId(nodeFetch);
 
-  //this will be ALL links - even if they are in the recycle bin or NOT localized assets
+  // this will be ALL links - even if they are in the recycle bin or NOT localized assets
   const response = await nodeFetch(
     getExistingLinksOptions.url,
-    getExistingLinksOptions
+    getExistingLinksOptions,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const allAssetLinks = await response.json();
-  console.log("All links amount: " + allAssetLinks.length);
+  console.log(`All links amount: ${allAssetLinks.length}`);
   // now we need to delete the links that aren't linkType = "child"
 
   const relatedAssetIds = [];
-  _.forEach(allAssetLinks, function (key) {
-    if (key.linkType === "child") {
+  _.forEach(allAssetLinks, (key) => {
+    if (key.linkType === 'child') {
       relatedAssetIds.push(key.secondaryId);
     }
   });
-  console.log("related links amount: " + relatedAssetIds.length);
+  console.log(`related links amount: ${relatedAssetIds.length}`);
 
-  // now modify the relatedAssetIds array with only the created by for the linked asset that is the same as the API user id
+  // now modify the relatedAssetIds array with only the created by for the linked asset that is
+  // the same as the API user id
   const cleanedRelatedAssets = [];
-  for (let i = 0; i < relatedAssetIds.length; i++) {
+  for (let i = 0; i < relatedAssetIds.length; i += 1) {
     const curId = relatedAssetIds[i];
-    const fileMetadata = await tools.getAsset(
-      curId,
-      nodeFetch
-    );
+    // eslint-disable-next-line no-await-in-loop
+    const fileMetadata = await getAsset(curId, nodeFetch);
 
     // only process files if the object id of row the doesn't exist, OR it exists but it's in the recycle bin
 
@@ -311,69 +291,56 @@ exports.getExistingLinks = async function getExistingLinks(
     //     fileMetadata.metadataTemplateId +
     //     fileMetadata.fileState
     // );
-    //ok now lets get rid of any relationships that weren't originally created by the automation
+    // ok now lets get rid of any relationships that weren't originally created by the automation
     if (
-      fileMetadata.currentVersion === "Y" &&
-      fileMetadata.metadataTemplateId === metadataTemplateId &&
-      fileMetadata.fileState === "available"
+      fileMetadata.currentVersion === 'Y'
+      && fileMetadata.metadataTemplateId === metadataTemplateId
+      && fileMetadata.fileState === 'available'
     ) {
       // localized version already exists - don't reprocess
       console.log(
-        "don't reprocess: curversion?: " +
-        fileMetadata.currentVersion +
-        "\ntemplate id match?: " +
-        fileMetadata.metadataTemplateId +
-        " " +
-        metadataTemplateId +
-        "\nfilestate?: " +
-        fileMetadata.fileState
+        `don't reprocess: curversion?: ${fileMetadata.currentVersion
+        }\ntemplate id match?: ${fileMetadata.metadataTemplateId
+        } ${metadataTemplateId
+        }\nfilestate?: ${fileMetadata.fileState}`,
       );
     } else {
       // localized version doesn't exist - reprocess
       console.log(
-        "don't reprocess: curversion?: " +
-        fileMetadata.currentVersion +
-        "\ntemplate id match?: " +
-        fileMetadata.metadataTemplateId +
-        " " +
-        metadataTemplateId +
-        "\nfilestate?: " +
-        fileMetadata.fileState
+        `don't reprocess: curversion?: ${fileMetadata.currentVersion
+        }\ntemplate id match?: ${fileMetadata.metadataTemplateId
+        } ${metadataTemplateId
+        }\nfilestate?: ${fileMetadata.fileState}`,
       );
       cleanedRelatedAssets.push(curId);
     }
   }
-  console.log(`SUCCESS Get getExistingLinks`);
+  console.log('SUCCESS Get getExistingLinks');
   return cleanedRelatedAssets;
 };
 
-exports.createLink = async function createLink(
-  rootAssetId,
-  derivativeAssetId,
-  linkType,
-  nodeFetch
-) {
+const createLink = async (rootAssetId, derivativeAssetId, linkType, nodeFetch) => {
   const accountIdSecrets = process.env.SECRETS;
 
-  console.log(`Start createLink`);
+  console.log('Start createLink');
   // create a relationship between the rootAssetId and the derivativeAssetId
   const body = {
     secondaryIds: [
       {
         id: derivativeAssetId,
-        linkType: linkType,
+        linkType,
       },
     ],
   };
 
-  var createLinkOptions = {
-    method: "POST",
-    url: accountIdSecrets.API_URL + "/asset/" + rootAssetId + "/link/",
+  const createLinkOptions = {
+    method: 'POST',
+    url: `${accountIdSecrets.API_URL}/asset/${rootAssetId}/link/`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
   };
@@ -381,80 +348,88 @@ exports.createLink = async function createLink(
   const response = await nodeFetch(createLinkOptions.url, createLinkOptions);
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
 
-  console.log(`SUCCESS Get createLink`);
+  console.log('SUCCESS Get createLink');
   return data;
 };
 
-exports.getControlledVocabularyValues =
-  async function getControlledVocabularyValues(
-    controlledVocabularyId,
-    nodeFetch
-  ) {
-    const accountIdSecrets = process.env.SECRETS;
-
-    // GET the controlled vocabulary values.id's for a given controlledVocabularyId
-    var getControlledVocabularyValuesOptions = {
-      method: "GET",
-      url:
-        accountIdSecrets.API_URL +
-        "/metadata/vocabulary/" +
-        controlledVocabularyId,
-      headers: {
-        "X-API-Key": accountIdSecrets.API_KEY,
-        AccessToken: process.env.TN_ACCESS_TOKEN,
-        Authorization: process.env.TN_AUTHORIZATION,
-        "Content-Type": "application/json",
-      },
-    };
-
-    const response = await nodeFetch(
-      getControlledVocabularyValuesOptions.url,
-      getControlledVocabularyValuesOptions
-    );
-    if (!response.ok) {
-      throw new Error(
-        `HTTP error! status: ${response.status} statusText: ${response.statusText} `
-      );
-    }
-    const data = await response.json();
-    return data.metadataDocument.values;
-  };
-
-exports.updateTableMetadataByid = async function updateTableMetadataByid(
-  existingAssetid,
-  theTable,
-  nodeFetch
-) {
+const getControlledVocabularyValues = async (controlledVocabularyId, nodeFetch) => {
   const accountIdSecrets = process.env.SECRETS;
 
-  console.log(`START updateTableMetadataByid`);
-  var updateTableMetadataByidOptions = {
-    method: "PATCH",
-    url: accountIdSecrets.API_URL + "/asset/" + existingAssetid,
+  // GET the controlled vocabulary values.id's for a given controlledVocabularyId
+  const getControlledVocabularyValuesOptions = {
+    method: 'GET',
+    url:
+      `${accountIdSecrets.API_URL
+      }/metadata/vocabulary/${controlledVocabularyId}`,
     headers: {
-      "X-API-Key": accountIdSecrets.API_KEY,
+      'X-API-Key': accountIdSecrets.API_KEY,
       AccessToken: process.env.TN_ACCESS_TOKEN,
       Authorization: process.env.TN_AUTHORIZATION,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const response = await nodeFetch(
+    getControlledVocabularyValuesOptions.url,
+    getControlledVocabularyValuesOptions,
+  );
+  if (!response.ok) {
+    throw new Error(
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
+    );
+  }
+  const data = await response.json();
+  return data.metadataDocument.values;
+};
+
+const updateTableMetadataByid = async (existingAssetid, theTable, nodeFetch) => {
+  const accountIdSecrets = process.env.SECRETS;
+
+  console.log('START updateTableMetadataByid');
+  const updateTableMetadataByidOptions = {
+    method: 'PATCH',
+    url: `${accountIdSecrets.API_URL}/asset/${existingAssetid}`,
+    headers: {
+      'X-API-Key': accountIdSecrets.API_KEY,
+      AccessToken: process.env.TN_ACCESS_TOKEN,
+      Authorization: process.env.TN_AUTHORIZATION,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(theTable),
   };
 
   const response = await nodeFetch(
     updateTableMetadataByidOptions.url,
-    updateTableMetadataByidOptions
+    updateTableMetadataByidOptions,
   );
   if (!response.ok) {
     throw new Error(
-      `HTTP error! status: ${response.status} statusText: ${response.statusText} `
+      `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
-  console.log(`SUCCESS updateTableMetadataByid`);
+  console.log('SUCCESS updateTableMetadataByid');
   return data;
+};
+
+module.exports = {
+  sleep,
+  extractAssetsFromAction,
+  getCollection,
+  getStage,
+  assetValidated,
+  createLink,
+  getApiEventType,
+  getAsset,
+  getControlledVocabularyValues,
+  getCurApiUserId,
+  getExistingLinks,
+  getMetadataTemplate,
+  updateTableMetadataByid,
+  searchByObjectId,
 };
