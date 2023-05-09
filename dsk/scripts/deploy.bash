@@ -103,7 +103,7 @@ aws s3 cp config/asset-localization-template.json $ASSET_LOC_TEMPLATE --profile 
 
 
 
-SECRET_POLICY_STRING="{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:sts::$NUMERIC_AWS_ACCT_ID:assumed-role/dsk-role-$CUSTOMER_ID-$CUSTOMER_NAME-$DISAMBIGUATOR/dsk-handler-function-$CUSTOMER_ID-$CUSTOMER_NAME-$DISAMBIGUATOR\"},\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"*\"}]}"
+SECRET_POLICY_STRING="{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"{arn:aws:sts::$NUMERIC_AWS_ACCT_ID:assumed-role/dsk-role-$CUSTOMER_ID-$CUSTOMER_NAME-$DISAMBIGUATOR/dsk-handler-function-$CUSTOMER_ID-$CUSTOMER_NAME-$DISAMBIGUATOR\"},\"{arn:aws:sts::$NUMERIC_AWS_ACCT_ID:assumed-role/dsk-role-$CUSTOMER_ID-$CUSTOMER_NAME-$DISAMBIGUATOR/dsk-proxy-function-$CUSTOMER_ID-$CUSTOMER_NAME-$DISAMBIGUATOR\"}],\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"*\"}]}"
 
 # should make smarter and only do where needed
 echo "Running npm i"
