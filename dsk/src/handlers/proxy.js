@@ -1,4 +1,4 @@
-// const Custom = require('../../custom/src/custom');
+const Custom = require('../../custom/src/custom');
 const ProxyUtilities = require('../tools/proxy-utilities');
 
 const handler = async (event) => {
@@ -12,7 +12,7 @@ const handler = async (event) => {
   };
 
   try {
-    console.log('Event:', event);
+    console.log(event);
     if (await ProxyUtilities.isValidEvent(event)) {
       if (ProxyUtilities.isConfirmationMessage(event)) {
         await ProxyUtilities.confirmSubscription(event);
@@ -20,7 +20,8 @@ const handler = async (event) => {
           message: 'Successfully confirmed subscription',
         })}`;
       } else if (ProxyUtilities.isNotification(event)) {
-        await ProxyUtilities.enqueue(event);
+        // await ProxyUtilities.enqueue(event);
+        await Custom.enqueue(event);
         response.body = `${JSON.stringify({
           message: 'Successfully enqueued message for processing',
         })}`;
