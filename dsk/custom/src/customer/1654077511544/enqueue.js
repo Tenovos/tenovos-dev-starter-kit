@@ -147,6 +147,7 @@ const enqueue = async (event) => {
     }
     const bodyMessage = JSON.parse(body.Message);
     const stage = Utilities.getStage(bodyMessage);
+    await AuthService.setEnv();
     await AuthService.tenovosAuth(Fetch);
     let action = null;
     if (stage === 'initial') {
