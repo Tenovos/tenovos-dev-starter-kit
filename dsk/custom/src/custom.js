@@ -3,7 +3,7 @@ const enqueue = async (event) => {
 
   try {
     const body = JSON.parse(event.body);
-    customerId = body?.MessageAttributes?.customerId?.Value || customerId;
+    customerId = body.MessageAttributes.customerId.Value;
 
     if (!customerId) {
       throw new Error('customerId not found');
@@ -27,7 +27,7 @@ const someBusinessLogic = async (customerId, asset, stage) => {
   } catch (error) {
     console.error('Custom Business Logic Error', {
       customerId,
-      assetId,
+      asset,
     }, error);
   }
 };
