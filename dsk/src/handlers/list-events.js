@@ -19,7 +19,7 @@ exports.handler = async (event, context) => {
     console.log(JSON.stringify(event));
     let responseHtml = "<html><body><table>"
     try {
-        const configArr = await readCsv('./config/all-event-configs.csv');
+        await readCsv('./config/all-event-configs.csv');
         for (let i = 0; i < data.length; i++) {
             const line = data[i];
             const configs = JSON.parse(line.configurations);
