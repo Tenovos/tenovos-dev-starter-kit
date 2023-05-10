@@ -66,9 +66,6 @@ const processInitialStage = async (action) => {
   const skipFileIds = [
     '00000000-0000-0000-0000-000000000000',
   ];
-  const validFileExtensions = [
-    '.indd',
-  ];
 
   for (let i = 0; i < fileIdChunks.length; i += 1) {
     const fileIdChunk = fileIdChunks[i];
@@ -86,9 +83,14 @@ const processInitialStage = async (action) => {
     assets.push(...assetChunk);
   }
 
+  const validFileExtensions = [
+    '.indd',
+  ];
+
   // const assetIds = assets.map((asset) => asset.objectId);
   // console.log('Asset Object IDs to process', assetIds);
   const nextStage = 'process-asset';
+  const processedAssetIds = [];
 
   // Send Notifications for All Assets
   for (let i = 0; i < assets.length; i += 1) {
@@ -111,28 +113,28 @@ const processInitialStage = async (action) => {
       // eslint-disable-next-line no-await-in-loop
       await sendMessage(messageBody);
 
-      // const params = {
-      //   DelaySeconds: 0,
-      //   MessageBody: JSON.stringify(messageBody),
-      //   QueueUrl: process.env.QUEUE_URL,
-      // };
-
-      // const sqsClient = new AWS.SQS({
-      //   region: 'us-east-1',
-      // });
-
-      // console.log('Sending SQS Message:', params);
-
-      // // eslint-disable-next-line no-await-in-loop
-      // const result = await sqsClient.sendMessage(params).promise();
-      // console.log('Sent Message to Queue:', result);
+      // Add Asset to Processed Assets List
+      processedAssetIds.push(objectId);
     } else {
-      console.log(`Skip sending ${nextStage} Notification for Asset:`, {
+      console.log(`Skip sending ${nextStage} Notification for Invalid Asset:`, {
         customerId,
         objectId,
         filename,
       });
     }
+  }
+
+  const bucket = process.env.CONFIG_BUCKET;
+
+  // Upload Manifest File if any Assets were processed
+  if (processedAssetIds.length) {
+    const actionId = action.objectId;
+    const key = `${actionId}/${collectionId}/manifest.json`;
+    const body = processedAssetIds;
+
+    // Upload Manifest File to S3
+    // eslint-disable-next-line no-await-in-loop
+    await Utilities.s3PutObject(bucket, key, body);
   }
 };
 
@@ -152,7 +154,7 @@ const enqueue = async (event) => {
     let action = null;
     if (stage === 'initial') {
       const actionId = bodyMessage.data.objectId;
-      const maxAttempt = 10;
+      const maxAttempt = 5;
       const sleepTime = 30000;
       let hasMetadata = false;
       // Loop to Get Action until Action is Indexed with Denormalized Metadata

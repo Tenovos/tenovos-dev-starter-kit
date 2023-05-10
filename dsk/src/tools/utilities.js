@@ -24,7 +24,7 @@ const getStage = (apiEvent) => {
 
 const getCollection = async function getCollection(id, nodeFetch) {
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
-  console.log(`START ${id}`);
+  console.log(`START Get Collection:`, id);
   const options = {
     method: 'GET',
     url: `${accountIdSecrets.API_URL}/collection/${id}`,
@@ -46,6 +46,7 @@ const getCollection = async function getCollection(id, nodeFetch) {
     );
   }
   const data = await response.json();
+  console.log(`END Get Collection:`, JSON.stringify(data));
   return data;
 };
 
@@ -123,7 +124,7 @@ const getAsset = async (assetId, nodeFetch) => {
     );
   }
   const data = await response.json();
-  console.log(`SUCCESS Getting Root Metadata for ${assetId}`);
+  console.log(`SUCCESS Get Asset ${assetId}`);
   return data;
 };
 
@@ -425,6 +426,42 @@ const updateTableMetadataByid = async (existingAssetid, theTable, nodeFetch) => 
   return data;
 };
 
+const s3PutObject = async (bucket, key, body, options) => new Promise((resolve, reject) => {
+  console.log(`AWS_PROFILE: ${process.env.AWS_PROFILE}`);
+  const s3 = new AWS.S3({
+    region: 'us-east-1',
+  });
+  const params = {
+    Bucket: bucket,
+    Key: key,
+    Body: JSON.stringify(body),
+    ContentType: 'application/json',
+  };
+  if (options && Object.keys(options).length) {
+    Object.assign(params, options);
+  }
+  console.log('Writing to s3', params);
+  s3.putObject(
+    params,
+    (error, data) => {
+      if (error) {
+        const message = 'Failed to Put Object in S3';
+        console.error(message, {
+          bucket,
+          key,
+        }, JSON.stringify(error));
+        reject(new Error(message));
+      } else {
+        console.log('Put Object in S3:', {
+          bucket,
+          key,
+        }, JSON.stringify(data));
+        resolve(data);
+      }
+    },
+  );
+});
+
 module.exports = {
   sleep,
   extractAssetsFromAction,
@@ -440,4 +477,5 @@ module.exports = {
   getMetadataTemplate,
   updateTableMetadataByid,
   runKeywordSearch,
+  s3PutObject,
 };
