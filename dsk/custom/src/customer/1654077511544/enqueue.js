@@ -130,7 +130,11 @@ const processInitialStage = async (action) => {
   if (processedAssetIds.length) {
     const actionId = action.objectId;
     const key = `${actionId}/${collectionId}/manifest.json`;
-    const body = processedAssetIds;
+    const body = {
+      actionId,
+      collectionId,
+      objectIds: processedAssetIds,
+    };
 
     // Upload Manifest File to S3
     // eslint-disable-next-line no-await-in-loop
