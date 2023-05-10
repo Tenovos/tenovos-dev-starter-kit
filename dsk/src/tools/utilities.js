@@ -1,8 +1,6 @@
 const _ = require('lodash');
-// const moment = require('moment');
-// const AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 const fetchLocal = require('node-fetch');
-// const tools = require('./utilities');
 
 const getStage = (apiEvent) => {
   let stage = null;
@@ -24,7 +22,7 @@ const getStage = (apiEvent) => {
 
 const getCollection = async function getCollection(id, nodeFetch) {
   const accountIdSecrets = JSON.parse(process.env.SECRETS);
-  console.log(`START Get Collection:`, id);
+  console.log('START Get Collection:', id);
   const options = {
     method: 'GET',
     url: `${accountIdSecrets.API_URL}/collection/${id}`,
@@ -46,7 +44,7 @@ const getCollection = async function getCollection(id, nodeFetch) {
     );
   }
   const data = await response.json();
-  console.log(`END Get Collection:`, JSON.stringify(data));
+  console.log('END Get Collection:', JSON.stringify(data));
   return data;
 };
 
@@ -61,12 +59,12 @@ const getApiEventType = (apiEvent) => {
     if (service === 'asset' && module === 'asset' && action === 'action') {
       const secrets = JSON.parse(process.env.SECRETS);
       console.log(`checking if user[${secrets.TN_USER_ID}] is permitted`);
+      const lastUpdatedBy = _.get(apiEvent, 'data.capturedChanges.lastUpdatedBy');
       if (
         apiEvent.createdBy === secrets.TN_USER_ID
-        || apiEvent.data?.capturedChanges?.lastUpdatedBy
-        === secrets.TN_USER_ID
-        || apiEvent.data?.capturedChanges?.lastUpdatedBy === null
-        || apiEvent.data?.capturedChanges?.lastUpdatedBy === ''
+        || lastUpdatedBy === secrets.TN_USER_ID
+        || lastUpdatedBy === null
+        || lastUpdatedBy === ''
       ) {
         console.log('ignoring message created by api user');
         return false;
@@ -77,7 +75,9 @@ const getApiEventType = (apiEvent) => {
     }
     return false;
   } catch (error) {
-    console.error('Failed to get Collection:', { collectionId: id }, error);
+    console.error('Failed to get Collection:', {
+      collectionId: id,
+    }, error);
     return false;
   }
 };
@@ -164,7 +164,7 @@ const runKeywordSearch = async (searchTerm, options, nodeFetch) => {
     body: JSON.stringify(body),
   };
 
-  const response = await nodeFetch(request.url, request,);
+  const response = await nodeFetch(request.url, request);
   if (!response.ok) {
     throw new Error(
       `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
