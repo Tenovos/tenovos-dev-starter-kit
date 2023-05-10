@@ -1,4 +1,4 @@
-const _ = require('underscore');
+const _ = require('lodash');
 // const moment = require('moment');
 // const AWS = require('aws-sdk');
 const fetchLocal = require('node-fetch');
@@ -127,20 +127,31 @@ const getAsset = async (assetId, nodeFetch) => {
   return data;
 };
 
-const searchByObjectId = async (assetId, locale, nodeFetch) => {
-  const accountIdSecrets = process.env.SECRETS;
+const runKeywordSearch = async (searchTerm, options, nodeFetch) => {
+  const accountIdSecrets = JSON.parse(process.env.SECRETS);
 
-  console.log(`START searchByObjectId(${assetId})`);
+  console.log(`START runKeywordSearch(${searchTerm})`);
   const body = {
     from: 0,
-    limit: 1,
-    searchTerm: `["${assetId}"]`,
-    filters: "['(SomeAttribute:\"SomeValue\")']",
+    limit: 50,
+    searchTerm,
+    sortBy: [
+      {
+        metadataDefinitionId: 'createdEpoch',
+        order: 'desc',
+      },
+    ],
+    // filters: "['(SomeAttribute:\"SomeValue\")']",
     operation: 'AND',
+    excludes: [
+      'metadataDocument.text_content',
+    ],
   };
+  // Override Default Parameters with Options
+  Object.assign(body, options);
 
   // GET the filename for a given asset Id
-  const searchByObjectIdOptions = {
+  const request = {
     method: 'POST',
     url: `${accountIdSecrets.API_URL}/search/keyword`,
     headers: {
@@ -152,17 +163,14 @@ const searchByObjectId = async (assetId, locale, nodeFetch) => {
     body: JSON.stringify(body),
   };
 
-  const response = await nodeFetch(
-    searchByObjectIdOptions.url,
-    searchByObjectIdOptions,
-  );
+  const response = await nodeFetch(request.url, request,);
   if (!response.ok) {
     throw new Error(
       `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );
   }
   const data = await response.json();
-  console.log(`SUCCESS searchByObjectId(${assetId})`);
+  console.log(`SUCCESS runKeywordSearch(${searchTerm})`);
   return data;
 };
 
@@ -431,5 +439,5 @@ module.exports = {
   getExistingLinks,
   getMetadataTemplate,
   updateTableMetadataByid,
-  searchByObjectId,
+  runKeywordSearch,
 };

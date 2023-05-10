@@ -5,7 +5,7 @@ const AppAuth = require('../libs/auth');
 
 exports.handler = async (event, context) => {
   console.log(`Event is of type ${typeof event}`);
-  console.log(JSON.stringify(event));
+  console.log('ENTER_SERVICE', JSON.stringify(event));
 
   let response = null;
 
@@ -58,7 +58,7 @@ exports.handler = async (event, context) => {
       };
     }
   } catch (error) {
-    console.error(error);
+    console.error('Failed to Process Event', event, error);
     response = {
       statusCode: 500,
       body: JSON.stringify({

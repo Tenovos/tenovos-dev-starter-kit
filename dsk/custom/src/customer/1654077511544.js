@@ -1,4 +1,4 @@
-const _ = require('underscore');
+const _ = require('lodash');
 const AWS = require('aws-sdk');
 const Fetch = require('node-fetch');
 const Path = require('path');
@@ -100,64 +100,135 @@ const Utilities = require('../../../src/tools/utilities');
 const processAsset = async (asset) => {
   console.log('Processing Asset', asset.objectId);
 
-  // for (let j = 0; j < inddLinksTableMissing.length; j++) {
-  //   session = await this.login(new TenovosAuth());
-  //   const linkRow = inddLinksTableMissing[j];
-  //   const missingLinkFilename = path.basename(linkRow.link_file_path);
-  //   const missingLinkFilesize = path.basename(linkRow.link_file_size);
-  //   console.log(`NEW_STRATEGY_PART_2 checking row ${missingLinkFilename}`);
-  //   if (relsFileNames.includes(missingLinkFilename)) {
-  //     console.log(`NEW_STRATEGY_PART_2 link already established ${missingLinkFilename}`);
-  //   } else {
-  //     console.log(`NEW_STRATEGY_PART_2 need to find link ${missingLinkFilename}`);
-  //     const filename = missingLinkFilename.replace('-fpo.png', '');
-  //     const arr = [];
-  //     arr.push(`${filename} `);
-  //     // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
-  //     const data = {
-  //       from: 0,
-  //       searchTerm: arr,
-  //       sortBy: [
-  //         {
-  //           metadataDefinitionId: 'createdEpoch',
-  //           order: 'desc',
-  //         },
-  //       ],
-  //       operation: 'AND',
-  //       excludes: [
-  //         'metadataDocument.text_content',
-  //       ],
-  //     };
+  const missingLinks = [];
 
-  //     const searchResults = await this.search(arr, session, data);
-  //     console.log(`Search returned ${searchResults.length} assets...`);
+  try {
+    // Extract INDD Table Metadata
+    const inddLinksTableMissing = asset.metadataDenormalized.system_layout_links;
 
-  //     for (let k = 0; k < searchResults.length; k += 1) {
-  //       const pgCandidate = searchResults[k];
-  //       const inddObjId = indd.objectId;
-  //       const inddFlName = indd.filename;
-  //       if (pgCandidate.filename.toLowerCase().endsWith('indd')) continue;
-  //       let inddLinkGroup = '';
-  //       try { inddLinkGroup = indd.technicalMetadata.image_metadata.assetLinksLinkGroup; } catch (e) { inddLinkGroup = 'unknown'; }
-  //       let inddRecId = '';
-  //       try { inddRecId = indd.technicalMetadata.image_metadata.recordId; } catch (e) { inddRecId = 'unknown'; }
-  //       const pgObjId = pgCandidate.objectId;
-  //       const pgFlName = pgCandidate.filename;
-  //       let pgFlSize = '';
-  //       try { pgFlSize = pgCandidate.technicalMetadata.tenovos_metadata.fileSizeInBytes; } catch (e) { pgFlSize = 'unknown'; }
-  //       let pgUsedInd = '';
-  //       try { pgUsedInd = pgCandidate.technicalMetadata.image_metadata.usedIn; } catch (e) { pgUsedInd = 'unknown'; }
-  //       let pgLinkGroup = '';
-  //       try { pgLinkGroup = pgCandidate.technicalMetadata.image_metadata.assetLinksLinkGroup; } catch (e) { pgLinkGroup = 'unknown'; }
+    for (let i = 0; i < inddLinksTableMissing.length; i += 1) {
+      const linkRow = inddLinksTableMissing[i];
 
-  //       //                                    pgCandidate.filename !== 'Augmented Icon_100.ai'
-  //       if (!pgCandidate || !pgCandidate.technicalMetadata || !pgCandidate.technicalMetadata.image_metadata || !pgCandidate.technicalMetadata.image_metadata.fileSize) {
-  //         console.log('got it');
-  //       }
-  //       console.log(`NEW_STRATEGY_PART_2_CSV\t${inddObjId}\t${inddFlName}\t${inddLinkGroup}\t${inddRecId}\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}\t${pgUsedInd}\t${pgLinkGroup}`);
-  //     }
-  //   }
-  // }
+      const missingLinkFilename = Path.basename(linkRow.link_file_path);
+      const missingLinkFilesize = Path.basename(linkRow.link_file_size);
+      console.log(`Checking Entry ${missingLinkFilename}`);
+      // if (relsFileNames.includes(missingLinkFilename)) {
+      if (linkRow.link_file_status !== 'MISSING') {
+        console.log(`Link already established ${missingLinkFilename}`);
+      } else {
+        console.log(`Need to find link for ${missingLinkFilename}`);
+        const filename = missingLinkFilename.replace('-fpo.png', '');
+        const searchTerm = [];
+        searchTerm.push(`${filename} `);
+        // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
+        const searchOptions = {
+          excludes: [
+            'metadataDocument.text_content',
+            'technicalMetadata',
+          ],
+        };
+
+        // Search for Placed Graphic Assets
+        // eslint-disable-next-line no-await-in-loop
+        const searchResults = await Utilities.runKeywordSearch(searchTerm, searchOptions, Fetch);
+        const { result } = searchResults;
+        console.log(`Search returned ${result.length} Assets`);
+
+        // Loop to Extract Missing Links
+        for (let j = 0; j < result.length; j += 1) {
+          const pgAsset = result[j];
+          let skipAsset = false;
+
+          const inddObjId = asset.objectId;
+          const inddFilename = asset.filename;
+          if (pgAsset.filename.toLowerCase().endsWith('indd')) {
+            skipAsset = true;
+          }
+          const inddLinkGroup = _.get(asset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
+          const inddRecId = _.get(asset, 'technicalMetadata.image_metadata.recordId', 'unknown');
+          const pgObjId = pgAsset.objectId;
+          const pgFlName = pgAsset.filename;
+          const pgFlSize = _.get(pgAsset, 'technicalMetadata.tenovos_metadata.fileSizeInBytes', 'unknown');
+          const pgUsedInd = _.get(pgAsset, 'technicalMetadata.image_metadata.usedIn', 'unknown');
+          const pgLinkGroup = _.get(pgAsset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
+
+          // pgCandidate.filename !== 'Augmented Icon_100.ai'
+          // if (!pgAsset || !pgAsset.technicalMetadata || !pgAsset.technicalMetadata.image_metadata
+          //   || !pgAsset.technicalMetadata.image_metadata.fileSize) {
+          //   console.log('Got It');
+          // }
+          if (!skipAsset) {
+            const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}\t${missingLinkFilename}`
+              + `\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}\t${pgUsedInd}\t${pgLinkGroup}`;
+            missingLinks.push(missingLink);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Failed to Process Asset and Extract Missing Links', asset, error);
+    throw error;
+  }
+
+  console.log('Missing Links', missingLinks);
+
+  return missingLinks;
+};
+
+const writeObjectToS3 = async (bucket, object) => new Promise((resolve, reject) => {
+  const { actionId, collectionId, objectId } = object;
+
+  console.log(`AWS_PROFILE: ${process.env.AWS_PROFILE}`);
+  const s3 = new AWS.S3({
+    region: 'us-east-1',
+  });
+  const params = {
+    Bucket: bucket,
+    Key: `${actionId}/${collectionId}/${objectId}.json`,
+    Body: JSON.stringify(object),
+    ContentType: 'application/json',
+  };
+  console.log('Writing to s3', params);
+  s3.putObject(
+    params,
+    (error, data) => {
+      if (error) {
+        const message = 'Failed to Upload Object to S3';
+        console.error(message, {
+          bucket,
+          actionId,
+          collectionId,
+          objectId,
+        }, JSON.stringify(error));
+        reject(new Error(message));
+      } else {
+        console.log('Uploaded Object to S3:', {
+          bucket,
+          actionId,
+          collectionId,
+          objectId,
+        }, JSON.stringify(data));
+        resolve(data);
+      }
+    },
+  );
+});
+
+const uploadMissingLinks = async (request, missingLinks) => {
+  const { actionId, collectionId, objectId } = request;
+  const bucket = process.env.CONFIG_BUCKET;
+  const params = {
+    actionId,
+    collectionId,
+    objectId,
+    csv: missingLinks,
+  };
+  await writeObjectToS3(bucket, params);
+  console.log('Completed Upload of Missing Links for Asset', {
+    actionId,
+    collectionId,
+    objectId,
+  });
 };
 
 const someBusinessLogic = async (request, stage) => {
@@ -179,16 +250,17 @@ const someBusinessLogic = async (request, stage) => {
   // }
 
   try {
-    const { customerId, collectionId, objectId } = request;
+    const { objectId } = request;
 
     // Get Asset by Object ID
     const asset = await Utilities.getAsset(objectId, Fetch);
     console.log('INDD Asset:', asset);
-    // Extract INDD Table Metadata
 
-    // Extract Technical Metadata
+    // Process Asset to Generate Missing Links JSON
+    const missingLinks = await processAsset(asset);
 
-    // Generate Asset Output JSON
+    // Upload Missing Links to S3
+    await uploadMissingLinks(request, missingLinks);
 
     // Write Asset Output to S3
   } catch (error) {
@@ -200,26 +272,6 @@ const someBusinessLogic = async (request, stage) => {
   }
 };
 
-const writeObjectToS3 = async (bucket, object) => {
-  console.log(`AWS_PROFILE: ${process.env.AWS_PROFILE}`);
-  const s3 = new AWS.S3({
-    region: 'us-east-1',
-  });
-  console.log(`Writing to s3...${JSON.stringify(object)}`);
-  s3.putObject(
-    {
-      Bucket: bucket,
-      Key: `${object.actionId}/${object.collectionId}/${object.objectId}`,
-      Body: JSON.stringify(object),
-      ContentType: 'application/json',
-    },
-    (err, data) => {
-      console.log(`${JSON.stringify(err)} ${JSON.stringify(data)}`);
-    },
-  );
-};
-
 module.exports = {
   someBusinessLogic,
-  writeObjectToS3,
 };

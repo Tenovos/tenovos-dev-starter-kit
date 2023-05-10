@@ -1,4 +1,4 @@
-const _ = require('underscore');
+const _ = require('lodash');
 const AWS = require('aws-sdk');
 const Fetch = require('node-fetch');
 const Path = require('path');
@@ -151,7 +151,25 @@ const enqueue = async (event) => {
     await AuthService.tenovosAuth(Fetch);
     let action = null;
     if (stage === 'initial') {
-      action = await Utilities.extractAssetsFromAction(bodyMessage.data.objectId);
+      const actionId = bodyMessage.data.objectId;
+      const maxRetry = 10;
+      let hasTechnicalMetadata = false;
+      // Loop to Get Action until Action is Indexed with Technical Metadata
+      for (let i = 0; i < maxRetry && !hasTechnicalMetadata; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        action = await Utilities.extractAssetsFromAction(actionId);
+        // Check for Technical Metadata, after Action is Indexed
+        if (Object.keys(action.technicalMetadata).length) {
+          hasTechnicalMetadata = true;
+        }
+      }
+      if (!hasTechnicalMetadata) {
+        const message = 'Action is missing Technical Metadata';
+        console.error(message, {
+          actionId,
+        });
+        throw new Error(message);
+      }
       await processInitialStage(action);
     } else {
       const message = JSON.parse(body.Message);

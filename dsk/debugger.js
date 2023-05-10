@@ -1,9 +1,8 @@
-
-const app = require("./src/app");
-const entry = require("./src/handlers/handler");
-const listEvents = require("./src/handlers/list-events");
-const aws = require("aws-sdk");
-const Handler = require('./src/handlers/handler');
+// const AWS = require('aws-sdk');
+// const App = require('./src/app');
+// const entry = require('./src/handlers/handler');
+const listEvents = require('./src/handlers/list-events');
+const ProcessHandler = require('./src/handlers/handler');
 const ProxyHandler = require('./src/handlers/proxy');
 const CustomHandler = require('./custom/src/customer/1654077511544');
 
@@ -20,38 +19,37 @@ async function debugAlt() {
   //   if (err) console.log(err, err.stack); // an error occurred
   //   else console.log(data);           // successful response
   // });
-  await entry.handler({
+  await ProcessHandler.handler({
     Records: [
       {
-        messageId: "dc8a9981-c780-4a2d-b63c-bc34a5382806",
+        messageId: 'dc8a9981-c780-4a2d-b63c-bc34a5382806',
         receiptHandle:
-          "AQEBLSsDZYdPLVdHKRD8b1NahhfeBeTbz9yRAOa8il/Wwpeyq+YvR8hxJyVUhZoogUkpFiGO9/y8THWGoeHLYAF+0DgxUJxnG2xm2+GhEKtxnkw9IDpd3kccTmyqRB6ccklT7HfVjJLfCTKp3CM2YMgfAnSMwYekZ3Rwqcqk7B9kFt8PSGhxaxMoHBMSN8TIRMH1MzAYSIeOX9ftsx5oDu3OHLkDmqi48uKWhX+ptwdRkdM1OtQWlwPN++iQHqcfxj06TSASpyNdW6BYYOQqoK5URgWkDU72NUVBv6gXF5QpGeJ70h0Ni4pj1CTep12AGo3QP0iHV+7kkRLrtqcbS2QSGOw4ZDX3AzYjFg18ZlpYEERBOpCy3H9FkM8pSSngA6cO1UwfhyxsyxCNmgNHrFmqnocDOHFMriLx2TZ/zALw5CI=",
+          'AQEBLSsDZYdPLVdHKRD8b1NahhfeBeTbz9yRAOa8il/Wwpeyq+YvR8hxJyVUhZoogUkpFiGO9/y8THWGoeHLYAF+0DgxUJxnG2xm2+GhEKtxnkw9IDpd3kccTmyqRB6ccklT7HfVjJLfCTKp3CM2YMgfAnSMwYekZ3Rwqcqk7B9kFt8PSGhxaxMoHBMSN8TIRMH1MzAYSIeOX9ftsx5oDu3OHLkDmqi48uKWhX+ptwdRkdM1OtQWlwPN++iQHqcfxj06TSASpyNdW6BYYOQqoK5URgWkDU72NUVBv6gXF5QpGeJ70h0Ni4pj1CTep12AGo3QP0iHV+7kkRLrtqcbS2QSGOw4ZDX3AzYjFg18ZlpYEERBOpCy3H9FkM8pSSngA6cO1UwfhyxsyxCNmgNHrFmqnocDOHFMriLx2TZ/zALw5CI=',
         body: '{"id":"2d386d49-9a12-4ccd-84c0-f41ee59ab184","createdAt":1679173333734,"createdBy":"9d81fedd-cd72-4f5a-bf15-39448cb3477b","customerId":"1654077511544","service":"asset","module":"asset","action":"update","data":{"objectId":"185706ef-1164-463f-b8d1-915f63a83636","lastUpdatedEpoch":1679434673176,"capturedChanges":{"lastUpdatedEpoch":1679434673176,"metadataDocument":{}},"change":["metadataDocument"]}}',
         attributes: {
-          ApproximateReceiveCount: "1",
+          ApproximateReceiveCount: '1',
           AWSTraceHeader:
-            "Root=1-641a4d86-4d3fdb91729a7ae713e592c3;Parent=2defe2467e2786b2;Sampled=0",
-          SentTimestamp: "1679445384497",
+            'Root=1-641a4d86-4d3fdb91729a7ae713e592c3;Parent=2defe2467e2786b2;Sampled=0',
+          SentTimestamp: '1679445384497',
           SenderId:
-            "AROAURVER4ND6SEXZEQPP:ENTER TOPIC NAME",
-          ApproximateFirstReceiveTimestamp: "1679445384503",
+            'AROAURVER4ND6SEXZEQPP:ENTER TOPIC NAME',
+          ApproximateFirstReceiveTimestamp: '1679445384503',
         },
         messageAttributes: {},
-        md5OfBody: "4694d9ff9f21a88dcdff068de46910a6",
-        eventSource: "aws:sqs",
+        md5OfBody: '4694d9ff9f21a88dcdff068de46910a6',
+        eventSource: 'aws:sqs',
         eventSourceARN:
-          "arn:aws:sqs:us-east-1:312803976007:1654077511544-avengers-test20",
-        awsRegion: "us-east-1",
+          'arn:aws:sqs:us-east-1:312803976007:1654077511544-avengers-test20',
+        awsRegion: 'us-east-1',
       },
     ],
   });
 }
 
 async function debugDskEvents() {
-  console.log("debugging dsk events");
+  console.log('debugging dsk events');
   await listEvents.handler({});
 }
-
 
 const runHandler = async () => {
   try {
@@ -64,32 +62,56 @@ const runHandler = async () => {
     //   if (err) console.log(err, err.stack); // an error occurred
     //   else console.log(data);           // successful response
     // });
-    await Handler.handler({
-      Records: [
-        {
-          messageId: 'dc8a9981-c780-4a2d-b63c-bc34a5382806',
-          receiptHandle:
-            'AQEBLSsDZYdPLVdHKRD8b1NahhfeBeTbz9yRAOa8il/Wwpeyq+YvR8hxJyVUhZoogUkpFiGO9/y8THWGoeHLYAF+0DgxUJxnG2xm2+GhEKtxnkw9IDpd3kccTmyqRB6ccklT7HfVjJLfCTKp3CM2YMgfAnSMwYekZ3Rwqcqk7B9kFt8PSGhxaxMoHBMSN8TIRMH1MzAYSIeOX9ftsx5oDu3OHLkDmqi48uKWhX+ptwdRkdM1OtQWlwPN++iQHqcfxj06TSASpyNdW6BYYOQqoK5URgWkDU72NUVBv6gXF5QpGeJ70h0Ni4pj1CTep12AGo3QP0iHV+7kkRLrtqcbS2QSGOw4ZDX3AzYjFg18ZlpYEERBOpCy3H9FkM8pSSngA6cO1UwfhyxsyxCNmgNHrFmqnocDOHFMriLx2TZ/zALw5CI=',
-          body: '{"id":"40404456-0494-4389-acbd-6a36eb626096","createdAt":1683326333810,"createdBy":"783f2498-366d-4bb4-83a8-8604d7e77163","customerId":"1654077511544","service":"asset","module":"asset","action":"action","data":{"objectId":"dd9aa519-47ff-4e10-8fb5-d0ecc8631b26","lastUpdatedEpoch":1683326333810,"match":["objectType"]}}',
-          // body: '{"id":"2d386d49-9a12-4ccd-84c0-f41ee59ab184","createdAt":1679173333734,"createdBy":"9d81fedd-cd72-4f5a-bf15-39448cb3477b","customerId":"1654077511544","service":"asset","module":"asset","action":"action","data":{"objectId":"185706ef-1164-463f-b8d1-915f63a83636","lastUpdatedEpoch":1679434673176,"capturedChanges":{"lastUpdatedEpoch":1679434673176,"metadataDocument":{}},"change":["metadataDocument"]}}',
-          attributes: {
-            ApproximateReceiveCount: '1',
-            AWSTraceHeader:
-              'Root=1-641a4d86-4d3fdb91729a7ae713e592c3;Parent=2defe2467e2786b2;Sampled=0',
-            SentTimestamp: '1679445384497',
-            SenderId:
-              'AROAURVER4ND6SEXZEQPP:ENTER TOPIC NAME',
-            ApproximateFirstReceiveTimestamp: '1679445384503',
+    const events = [
+      {
+        Records: [
+          {
+            messageId: '0d89ffa5-96e6-4d7f-9fb2-1b734fb50a72',
+            receiptHandle: 'AQEBuzivb5yt0kjZWT7nnTZS8CjHo+NqyoViIs6kXKg1Ppw+p4aNeZTB7JdE6TuQBB0ktGW22RCEDL70sTRhtVBa6NaMWAwVHTEc14/I8ql+IdVQLTLzC7Omyron0QdQmw/ugg+fWdUxxK/CZR25jw9sUW+TsGa6KwsiPBcNQyqX9X3kQgdgzoIK941Z6EnktK+kDHPddjiswJxZZ0TPFZP0Y6/ze7ReIsPRSWypg5OD1dm7l5llKUq6f8C7+J0F3CcK3UuMQM5P5+VyAq5/3ujLoNFrXMGtsiZpDHw0GQ3WqqnIP4oTZCQyfzkBj8aeVZpYE3Gs43xxXsD7Fm8MGNql05o2eyo4sLxoeP098v7cgHFv1bHSr9QNS9NWW2gDTL6qWU3eVU4jB4U9iT2/DOYPuw==',
+            body: '{"customerId":"1654077511544","actionId":"1a8240ab-8e87-4ece-9db1-dbdfd123eaeb","collectionId":"5a5ba890-5dd0-4e16-bf2f-c802ad1e2a46","objectId":"07228eee-8af7-49f0-8984-c516e68ace1e","filename":"102N_14_TSG_EN.indd","stage":"process-asset"}',
+            attributes: {
+              ApproximateReceiveCount: '1',
+              AWSTraceHeader: 'Root=1-645ac7bf-12aa53c6585ae20a6fc4c4db;Parent=393b64467336cdef;Sampled=0;Lineage=4cf5a63c:0',
+              SentTimestamp: '1683671008750',
+              SenderId: 'AROAURVER4ND3DEEPMGDI:dsk-proxy-function-1654077511544-pp-ils',
+              ApproximateFirstReceiveTimestamp: '1683671008761',
+            },
+            messageAttributes: {},
+            md5OfBody: '5516cc412a3f6664d9bb285a04171864',
+            eventSource: 'aws:sqs',
+            eventSourceARN: 'arn:aws:sqs:us-east-1:312803976007:1654077511544-pp-ils',
+            awsRegion: 'us-east-1',
           },
-          messageAttributes: {},
-          md5OfBody: '4694d9ff9f21a88dcdff068de46910a6',
-          eventSource: 'aws:sqs',
-          eventSourceARN:
-            'arn:aws:sqs:us-east-1:312803976007:1654077511544-avengers-test20',
-          awsRegion: 'us-east-1',
-        },
-      ],
-    });
+        ],
+      },
+      {
+        Records: [
+          {
+            messageId: 'dc8a9981-c780-4a2d-b63c-bc34a5382806',
+            receiptHandle:
+              'AQEBLSsDZYdPLVdHKRD8b1NahhfeBeTbz9yRAOa8il/Wwpeyq+YvR8hxJyVUhZoogUkpFiGO9/y8THWGoeHLYAF+0DgxUJxnG2xm2+GhEKtxnkw9IDpd3kccTmyqRB6ccklT7HfVjJLfCTKp3CM2YMgfAnSMwYekZ3Rwqcqk7B9kFt8PSGhxaxMoHBMSN8TIRMH1MzAYSIeOX9ftsx5oDu3OHLkDmqi48uKWhX+ptwdRkdM1OtQWlwPN++iQHqcfxj06TSASpyNdW6BYYOQqoK5URgWkDU72NUVBv6gXF5QpGeJ70h0Ni4pj1CTep12AGo3QP0iHV+7kkRLrtqcbS2QSGOw4ZDX3AzYjFg18ZlpYEERBOpCy3H9FkM8pSSngA6cO1UwfhyxsyxCNmgNHrFmqnocDOHFMriLx2TZ/zALw5CI=',
+            body: '{"id":"40404456-0494-4389-acbd-6a36eb626096","createdAt":1683326333810,"createdBy":"783f2498-366d-4bb4-83a8-8604d7e77163","customerId":"1654077511544","service":"asset","module":"asset","action":"action","data":{"objectId":"dd9aa519-47ff-4e10-8fb5-d0ecc8631b26","lastUpdatedEpoch":1683326333810,"match":["objectType"]}}',
+            // body: '{"id":"2d386d49-9a12-4ccd-84c0-f41ee59ab184","createdAt":1679173333734,"createdBy":"9d81fedd-cd72-4f5a-bf15-39448cb3477b","customerId":"1654077511544","service":"asset","module":"asset","action":"action","data":{"objectId":"185706ef-1164-463f-b8d1-915f63a83636","lastUpdatedEpoch":1679434673176,"capturedChanges":{"lastUpdatedEpoch":1679434673176,"metadataDocument":{}},"change":["metadataDocument"]}}',
+            attributes: {
+              ApproximateReceiveCount: '1',
+              AWSTraceHeader:
+                'Root=1-641a4d86-4d3fdb91729a7ae713e592c3;Parent=2defe2467e2786b2;Sampled=0',
+              SentTimestamp: '1679445384497',
+              SenderId:
+                'AROAURVER4ND6SEXZEQPP:ENTER TOPIC NAME',
+              ApproximateFirstReceiveTimestamp: '1679445384503',
+            },
+            messageAttributes: {},
+            md5OfBody: '4694d9ff9f21a88dcdff068de46910a6',
+            eventSource: 'aws:sqs',
+            eventSourceARN:
+              'arn:aws:sqs:us-east-1:312803976007:1654077511544-avengers-test20',
+            awsRegion: 'us-east-1',
+          },
+        ],
+      },
+    ];
+    await ProcessHandler.handler(events[0]);
   } catch (e) {
     console.error(e);
   } finally {
@@ -255,26 +277,30 @@ const runProxyHandler = async () => {
 };
 
 async function debugS3() {
-  console.log("debugging S3");
-  await CustomHandler.writeObjectToS3('dsk-1654077511544ppils-us-east-1', { "actionId": "some-action", "collectionId": "some-collection", "objectId": "some-object" });
+  console.log('debugging S3');
+  await CustomHandler.writeObjectToS3('dsk-1654077511544ppils-us-east-1', {
+    actionId: 'some-action',
+    collectionId: 'some-collection',
+    objectId: 'some-object',
+  });
 }
 
 (async () => {
   try {
     switch (action) {
-      case "alt":
+      case 'alt':
         await debugAlt();
         break;
-      case "dskEvents":
+      case 'dskEvents':
         await debugDskEvents();
         break;
-      case "handler":
+      case 'handler':
         await runHandler();
         break;
-      case "proxyHandler":
+      case 'proxyHandler':
         await runProxyHandler();
         break;
-      case "s3":
+      case 's3':
         await debugS3();
         break;
       default:
@@ -284,6 +310,6 @@ async function debugS3() {
   } catch (e) {
     console.error(e);
   } finally {
-    console.log("Done...");
+    console.log('Done...');
   }
 })();
