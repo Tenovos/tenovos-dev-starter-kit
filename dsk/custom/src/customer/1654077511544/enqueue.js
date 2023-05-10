@@ -90,49 +90,40 @@ const processInitialStage = async (action) => {
   // console.log('Asset Object IDs to process', assetIds);
   const nextStage = 'process-asset';
 
-  // Send Notifications for All Assets
+  const processableAssets = [];
   for (let i = 0; i < assets.length; i += 1) {
     const asset = assets[i];
     const { customerId, objectId, filename } = asset;
-
     const fileExt = Path.extname(filename.toLowerCase());
-
     // Only send message for Valid File Types
     if (validFileExtensions.includes(fileExt.toLowerCase())) {
-      const messageBody = {
-        customerId,
-        actionId: action.objectId,
-        collectionId,
-        objectId,
-        filename,
-        stage: nextStage,
-      };
-
-      // eslint-disable-next-line no-await-in-loop
-      await sendMessage(messageBody);
-
-      // const params = {
-      //   DelaySeconds: 0,
-      //   MessageBody: JSON.stringify(messageBody),
-      //   QueueUrl: process.env.QUEUE_URL,
-      // };
-
-      // const sqsClient = new AWS.SQS({
-      //   region: 'us-east-1',
-      // });
-
-      // console.log('Sending SQS Message:', params);
-
-      // // eslint-disable-next-line no-await-in-loop
-      // const result = await sqsClient.sendMessage(params).promise();
-      // console.log('Sent Message to Queue:', result);
+      processableAssets.push(asset);
     } else {
-      console.log(`Skip sending ${nextStage} Notification for Asset:`, {
+      console.log('Skip sending Notification for Asset:', {
         customerId,
         objectId,
         filename,
       });
     }
+  }
+
+  // Send Notifications for All Assets
+  for (let i = 0; i < processableAssets.length; i += 1) {
+    const asset = processableAssets[i];
+    const { customerId, objectId, filename } = asset;
+
+    const messageBody = {
+      itemNum: `${i + 1}/${processableAssets.length}`,
+      customerId,
+      actionId: action.objectId,
+      collectionId,
+      objectId,
+      filename,
+      stage: nextStage,
+    };
+
+    // eslint-disable-next-line no-await-in-loop
+    await sendMessage(messageBody);
   }
 };
 
