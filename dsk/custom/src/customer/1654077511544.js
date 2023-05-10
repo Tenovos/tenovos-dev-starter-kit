@@ -117,8 +117,9 @@ const processAsset = async (asset) => {
         console.log(`Link already established ${missingLinkFilename}`);
       } else {
         console.log(`Need to find link for ${missingLinkFilename}`);
-        const filename = missingLinkFilename.replace('-fpo.png', '');
         const searchTerm = [];
+
+        const filename = missingLinkFilename.replace('-fpo.png', '');
         searchTerm.push(`${filename} `);
         // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
         const searchOptions = {
@@ -139,28 +140,57 @@ const processAsset = async (asset) => {
           const pgAsset = result[j];
           let skipAsset = false;
 
-          const inddObjId = asset.objectId;
-          const inddFilename = asset.filename;
-          if (pgAsset.filename.toLowerCase().endsWith('indd')) {
+          // Skip Linked INDD Files
+          if (pgAsset.filename.toLowerCase().endsWith('.indd')) {
             skipAsset = true;
           }
+
+          const inddObjId = asset.objectId;
+          const inddFilename = asset.filename;
           const inddLinkGroup = _.get(asset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
           const inddRecId = _.get(asset, 'technicalMetadata.image_metadata.recordId', 'unknown');
-          const pgObjId = pgAsset.objectId;
+          let pgObjIds = [
+            pgAsset.objectId,
+          ];
           const pgFlName = pgAsset.filename;
           const pgFlSize = _.get(pgAsset, 'technicalMetadata.tenovos_metadata.fileSizeInBytes', 'unknown');
           const pgUsedInd = _.get(pgAsset, 'technicalMetadata.image_metadata.usedIn', 'unknown');
           const pgLinkGroup = _.get(pgAsset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
+
+          try {
+            // Check for Uncomfirmed Object IDs
+            const pgUnconfirmedObjectIds = JSON.parse(
+              _.get(pgAsset, 'metadataDenormalized.system_layout_links.link_unconfirmed_object_ids', '[]'),
+            );
+            // Use Unconfirmed Object IDs instead of Filename if exists
+            if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
+              pgObjIds = pgUnconfirmedObjectIds;
+            }
+          } catch (error) {
+            console.warn('Failed to extract Unconfirmed Links from Asset', {
+              objectId: asset.objectId,
+            });
+          }
 
           // pgCandidate.filename !== 'Augmented Icon_100.ai'
           // if (!pgAsset || !pgAsset.technicalMetadata || !pgAsset.technicalMetadata.image_metadata
           //   || !pgAsset.technicalMetadata.image_metadata.fileSize) {
           //   console.log('Got It');
           // }
+
+          // Add Missing Link if Not Skipping Asset
           if (!skipAsset) {
-            const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}\t${missingLinkFilename}`
-              + `\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}\t${pgUsedInd}\t${pgLinkGroup}`;
-            missingLinks.push(missingLink);
+            // Loop to create Missing Links for Each Link Object ID
+            for (let k = 0; k < pgObjIds.length; k += 1) {
+              const pgObjId = pgObjIds[k];
+
+              const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
+                + `\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
+                + `\t${pgUsedInd}\t${pgLinkGroup}`;
+
+              // Add Missing Link to List
+              missingLinks.push(missingLink);
+            }
           }
         }
       }
