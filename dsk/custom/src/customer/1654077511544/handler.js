@@ -2,7 +2,7 @@ const _ = require('lodash');
 const AWS = require('aws-sdk');
 const Fetch = require('node-fetch');
 const Path = require('path');
-const Utilities = require('../../../src/tools/utilities');
+const Utilities = require('../../../../src/tools/utilities');
 // const AppAuth = require('../../../src/libs/auth');
 
 // const processInitialStage = async (action, stage) => {

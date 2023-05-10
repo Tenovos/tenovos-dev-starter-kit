@@ -22,7 +22,7 @@ const enqueue = async (event) => {
 const someBusinessLogic = async (customerId, asset, stage) => {
   try {
     // eslint-disable-next-line import/no-dynamic-require, global-require
-    const CustomApp = require(`./customer/${customerId}`);
+    const CustomApp = require(`./customer/${customerId}/handler`);
     await CustomApp.someBusinessLogic(asset, stage);
   } catch (error) {
     console.error('Custom Business Logic Error', {

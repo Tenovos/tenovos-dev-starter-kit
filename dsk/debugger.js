@@ -4,7 +4,7 @@
 const listEvents = require('./src/handlers/list-events');
 const ProcessHandler = require('./src/handlers/handler');
 const ProxyHandler = require('./src/handlers/proxy');
-const CustomHandler = require('./custom/src/customer/1654077511544');
+const CustomHandler = require('./custom/src/customer/1654077511544/1654077511544');
 
 const args = process.argv.slice(2);
 const action = args[0];
