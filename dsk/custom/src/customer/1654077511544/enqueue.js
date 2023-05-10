@@ -153,6 +153,7 @@ const enqueue = async (event) => {
     if (stage === 'initial') {
       const actionId = bodyMessage.data.objectId;
       const maxRetry = 10;
+      const sleepTime = 30000;
       let hasTechnicalMetadata = false;
       // Loop to Get Action until Action is Indexed with Technical Metadata
       for (let i = 0; i < maxRetry && !hasTechnicalMetadata; i += 1) {
@@ -161,6 +162,9 @@ const enqueue = async (event) => {
         // Check for Technical Metadata, after Action is Indexed
         if (Object.keys(action.technicalMetadata).length) {
           hasTechnicalMetadata = true;
+        } else {
+          // eslint-disable-next-line no-await-in-loop
+          await Utilities.sleep(sleepTime);
         }
       }
       if (!hasTechnicalMetadata) {
