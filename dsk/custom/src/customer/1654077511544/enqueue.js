@@ -152,25 +152,28 @@ const enqueue = async (event) => {
     let action = null;
     if (stage === 'initial') {
       const actionId = bodyMessage.data.objectId;
-      const maxRetry = 10;
+      const maxAttempt = 10;
       const sleepTime = 30000;
-      let hasTechnicalMetadata = false;
-      // Loop to Get Action until Action is Indexed with Technical Metadata
-      for (let i = 0; i < maxRetry && !hasTechnicalMetadata; i += 1) {
+      let hasMetadata = false;
+      // Loop to Get Action until Action is Indexed with Denormalized Metadata
+      for (let i = 0; i < maxAttempt && !hasMetadata; i += 1) {
         // eslint-disable-next-line no-await-in-loop
         action = await Utilities.extractAssetsFromAction(actionId);
-        // Check for Technical Metadata, after Action is Indexed
-        if (Object.keys(action.technicalMetadata).length) {
-          hasTechnicalMetadata = true;
+        // Check for Denormalized Metadata, after Action is Indexed
+        if (Object.keys(action.metadataDenormalized).length) {
+          hasMetadata = true;
         } else {
           // eslint-disable-next-line no-await-in-loop
           await Utilities.sleep(sleepTime);
+          console.log('Get Action Retry Attempt:', i + 1);
         }
       }
-      if (!hasTechnicalMetadata) {
-        const message = 'Action is missing Technical Metadata';
+      if (!hasMetadata) {
+        const message = 'Action is missing Denormalized Metadata';
         console.error(message, {
           actionId,
+          maxAttempt,
+          sleepTime,
         });
         throw new Error(message);
       }
