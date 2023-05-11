@@ -26,6 +26,24 @@ Resources:
           MODE: "CLOUD"
           CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
+          ASYNC_LAMBDA: 'dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+  DskProxyAsyncFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: 'dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      Handler: ./src/handlers/proxy-async.handler
+      Runtime: nodejs16.x
+      Timeout: 300
+      MemorySize: 256
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+      Environment:
+        Variables:
+          CUSTOMER_ID: '_CUSTOMERID_'
+          PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
+          MODE: "CLOUD"
+          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+          QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'          
   DskListEventsFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
@@ -51,7 +69,7 @@ Resources:
       FunctionName: 'dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       Handler: ./src/handlers/handler.handler
       Runtime: nodejs16.x
-      Timeout: 300
+      Timeout: 600
       MemorySize: 256
       ReservedConcurrentExecutions: 0
       Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
@@ -119,12 +137,14 @@ Resources:
                 Resource: 
                   - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
                   - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
               - Effect: Allow
                 Action:
                   - lambda:*            
                 Resource: 
                   - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
                   - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:dsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
               - Effect: Allow
                 Action:
                   - s3:*            
@@ -174,12 +194,18 @@ Outputs:
   CloudwatchProxyUrl: 
     Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
     Description: "Quick access to proxy logs"
+  CloudwatchProxyAsyncUrl: 
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/$252Faws$252Flambda$252Fdsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to proxy-async logs"
   LambdaHandlerUrl: 
     Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
     Description: "Quick access to handler lambda"
   LambdaProxyUrl: 
-    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
     Description: "Quick access to proxy lambda"
+  LambdaProxyUrl: 
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
+    Description: "Quick access to proxy-async lambda"
   SqsUrl:
     Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/sqs/v2/home?region=${AWS::Region}#/queues/https%3A%2F%2Fsqs.${AWS::Region}.amazonaws.com%2F${AWS::AccountId}%2F_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_"
     Description: "Quick access to queue"

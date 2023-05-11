@@ -1,44 +1,25 @@
-const Custom = require('../../custom/src/custom');
-const ProxyUtilities = require('../tools/proxy-utilities');
+const AWS = require('aws-sdk');
+const Utilities = require('../tools/utilities');
 
-const handler = async (event) => {
-  const response = {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'text/plain',
-      'Access-Control-Allow-Origin': '*',
-    },
-    body: 'ok',
-  };
+const handler = async (event, context) => {
+  console.info(`ENTER_SERVICE: \n${JSON.stringify(event)}`);
 
-  try {
-    console.log('ENTER_SERVICE', JSON.stringify(event));
-    if (await ProxyUtilities.isValidEvent(event)) {
-      if (ProxyUtilities.isConfirmationMessage(event)) {
-        await ProxyUtilities.confirmSubscription(event);
-        response.body = `${JSON.stringify({
-          message: 'Successfully confirmed subscription',
-        })}`;
-      } else if (ProxyUtilities.isNotification(event)) {
-        // await ProxyUtilities.enqueue(event);
-        await Custom.enqueue(event);
-        response.body = `${JSON.stringify({
-          message: 'Successfully enqueued message for processing',
-        })}`;
-      } else {
-        throw new Error('Event appears to be invalid');
-      }
-    } else {
-      throw new Error('Message appears to be invalid');
-    }
-  } catch (error) {
-    console.error(error);
-    response.statusCode = 500;
-    response.body = `${JSON.stringify({
-      message: error.message,
-    })}`;
-  }
-  return response;
+  const lambda = new AWS.Lambda({
+    region: 'us-east-1',
+  });
+
+  console.log(`Before async invocation caling ${process.env.ASYNC_LAMBDA}...`);
+  lambda.invokeAsync({
+    FunctionName: process.env.ASYNC_LAMBDA,
+    InvokeArgs: JSON.stringify(event, null, 2),
+  }, (err, data) => {
+    if (err) console.log(err, err.stack);
+    else console.log(data);
+  });
+  console.log('After async invocation...sleeping');
+  await Utilities.sleep(10000);
+  console.log('Woke up...');
+  return context.succeed();
 };
 
 module.exports = {
