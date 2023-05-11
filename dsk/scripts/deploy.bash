@@ -169,7 +169,7 @@ then
   echo "Deploying...with tags git sha [--tags "tnvs:services:delivery:git-commit-sha=$GIT_COMMIT_SHA" "tnvs:services:delivery:jenkins-build-num=N/A" "tnvs:services:delivery:branch=$BRANCH_NAME" "tnvs:services:delivery:jenkins-job-name=N/A" "tnvs:services:delivery:environment=$ENVIRONMENT" "tnvs:services:delivery:customer-id=$CUSTOMER_ID" "tnvs:services:delivery:customer-name=$CUSTOMER_NAME" "customerId=$CUSTOMER_ID"]..."
   aws cloudformation deploy --stack-name $STACK_NAME --template-file serverless-output.yml  \
                             --profile $ENVIRONMENT \
-                            --capabilities CAPABILITY_NAMED_IAM \
+                            --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
                             --region us-east-1 \
                             --s3-bucket tenovos-cicd \
                             --no-fail-on-empty-changeset \

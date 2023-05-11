@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: Custom Template
 
 Resources:
-  TestBucket:
+  TestBucket1654077511544:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: testNestedStack
+      BucketName: testnestedstack1654077511544
