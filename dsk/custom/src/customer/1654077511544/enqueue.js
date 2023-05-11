@@ -66,9 +66,6 @@ const processInitialStage = async (action) => {
   const skipFileIds = [
     '00000000-0000-0000-0000-000000000000',
   ];
-  const validFileExtensions = [
-    '.indd',
-  ];
 
   for (let i = 0; i < fileIdChunks.length; i += 1) {
     const fileIdChunk = fileIdChunks[i];
@@ -86,20 +83,40 @@ const processInitialStage = async (action) => {
     assets.push(...assetChunk);
   }
 
+  const validFileExtensions = [
+    '.indd',
+  ];
+
   // const assetIds = assets.map((asset) => asset.objectId);
   // console.log('Asset Object IDs to process', assetIds);
   const nextStage = 'process-asset';
+  const processedAssetIds = [];
 
-  const processableAssets = [];
+  // Send Notifications for All Assets
   for (let i = 0; i < assets.length; i += 1) {
     const asset = assets[i];
     const { customerId, objectId, filename } = asset;
+
     const fileExt = Path.extname(filename.toLowerCase());
+
     // Only send message for Valid File Types
     if (validFileExtensions.includes(fileExt.toLowerCase())) {
-      processableAssets.push(asset);
+      const messageBody = {
+        customerId,
+        actionId: action.objectId,
+        collectionId,
+        objectId,
+        filename,
+        stage: nextStage,
+      };
+
+      // eslint-disable-next-line no-await-in-loop
+      await sendMessage(messageBody);
+
+      // Add Asset to Processed Assets List
+      processedAssetIds.push(objectId);
     } else {
-      console.log('Skip sending Notification for Asset:', {
+      console.log(`Skip sending ${nextStage} Notification for Invalid Asset:`, {
         customerId,
         objectId,
         filename,
@@ -107,23 +124,21 @@ const processInitialStage = async (action) => {
     }
   }
 
-  // Send Notifications for All Assets
-  for (let i = 0; i < processableAssets.length; i += 1) {
-    const asset = processableAssets[i];
-    const { customerId, objectId, filename } = asset;
+  const bucket = process.env.CONFIG_BUCKET;
 
-    const messageBody = {
-      itemNum: `${i + 1}/${processableAssets.length}`,
-      customerId,
-      actionId: action.objectId,
+  // Upload Manifest File if any Assets were processed
+  if (processedAssetIds.length) {
+    const actionId = action.objectId;
+    const key = `${actionId}/${collectionId}/manifest.json`;
+    const body = {
+      actionId,
       collectionId,
-      objectId,
-      filename,
-      stage: nextStage,
+      objectIds: processedAssetIds,
     };
 
+    // Upload Manifest File to S3
     // eslint-disable-next-line no-await-in-loop
-    await sendMessage(messageBody);
+    await Utilities.s3PutObject(bucket, key, body);
   }
 };
 
@@ -143,21 +158,28 @@ const enqueue = async (event) => {
     let action = null;
     if (stage === 'initial') {
       const actionId = bodyMessage.data.objectId;
-      const maxRetry = 10;
-      let hasTechnicalMetadata = false;
-      // Loop to Get Action until Action is Indexed with Technical Metadata
-      for (let i = 0; i < maxRetry && !hasTechnicalMetadata; i += 1) {
+      const maxAttempt = 5;
+      const sleepTime = 30000;
+      let hasMetadata = false;
+      // Loop to Get Action until Action is Indexed with Denormalized Metadata
+      for (let i = 0; i < maxAttempt && !hasMetadata; i += 1) {
         // eslint-disable-next-line no-await-in-loop
         action = await Utilities.extractAssetsFromAction(actionId);
-        // Check for Technical Metadata, after Action is Indexed
-        if (Object.keys(action.technicalMetadata).length) {
-          hasTechnicalMetadata = true;
+        // Check for Denormalized Metadata, after Action is Indexed
+        if (Object.keys(action.metadataDenormalized).length) {
+          hasMetadata = true;
+        } else {
+          // eslint-disable-next-line no-await-in-loop
+          await Utilities.sleep(sleepTime);
+          console.log('Get Action Retry Attempt:', i + 1);
         }
       }
-      if (!hasTechnicalMetadata) {
-        const message = 'Action is missing Technical Metadata';
+      if (!hasMetadata) {
+        const message = 'Action is missing Denormalized Metadata';
         console.error(message, {
           actionId,
+          maxAttempt,
+          sleepTime,
         });
         throw new Error(message);
       }

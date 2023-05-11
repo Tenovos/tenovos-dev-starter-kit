@@ -247,6 +247,7 @@ const writeObjectToS3 = async (bucket, object) => new Promise((resolve, reject) 
 const uploadMissingLinks = async (request, missingLinks) => {
   const { actionId, collectionId, objectId } = request;
   const bucket = process.env.CONFIG_BUCKET;
+
   const params = {
     actionId,
     collectionId,
@@ -284,7 +285,7 @@ const someBusinessLogic = async (request, stage) => {
 
     // Get Asset by Object ID
     const asset = await Utilities.getAsset(objectId, Fetch);
-    console.log('INDD Asset:', asset);
+    // console.log('INDD Asset:', asset);
 
     // Process Asset to Generate Missing Links JSON
     const missingLinks = await processAsset(asset);
