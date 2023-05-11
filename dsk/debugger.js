@@ -1,10 +1,12 @@
+/* eslint-disable no-console */
 // const AWS = require('aws-sdk');
 // const App = require('./src/app');
 // const entry = require('./src/handlers/handler');
 const listEvents = require('./src/handlers/list-events');
 const ProcessHandler = require('./src/handlers/handler');
 const ProxyHandler = require('./src/handlers/proxy');
-const CustomHandler = require('./custom/src/customer/1654077511544/1654077511544');
+const CustomHandler = require('./custom/src/customer/1654077511544/handler');
+const Utilities = require('./src/tools/utilities');
 
 const args = process.argv.slice(2);
 const action = args[0];
@@ -276,12 +278,29 @@ const runProxyHandler = async () => {
   }
 };
 
-async function debugS3() {
+async function debugS3Put() {
   console.log('debugging S3');
   await CustomHandler.writeObjectToS3('dsk-1654077511544ppils-us-east-1', {
     actionId: 'some-action',
     collectionId: 'some-collection',
     objectId: 'some-object',
+  });
+}
+
+async function debugS3Get() {
+  Utilities.s3ListObjectsByName({
+    bucket: 'dsk-1654077511544ppils-us-east-1',
+  }).then(async (objects) => {
+    console.log(`${objects.length} objects total`);
+    for (let i = 0; i < objects.length; i += 1) {
+      const object = objects[i];
+      if (object.Key.endsWith('manifest.json')) {
+        console.log(JSON.stringify(object));
+        // eslint-disable-next-line no-await-in-loop
+        const obj = await Utilities.s3GetKey('dsk-1654077511544ppils-us-east-1', object.Key);
+        console.log(`abc ${obj.Body}`);
+      }
+    }
   });
 }
 
@@ -300,8 +319,11 @@ async function debugS3() {
       case 'proxyHandler':
         await runProxyHandler();
         break;
-      case 's3':
-        await debugS3();
+      case 's3Put':
+        await debugS3Put();
+        break;
+      case 's3Get':
+        debugS3Get();
         break;
       default:
         console.log(`Invalid action[${action}]`);

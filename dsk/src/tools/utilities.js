@@ -462,6 +462,47 @@ const s3PutObject = async (bucket, key, body, options) => new Promise((resolve, 
   );
 });
 
+const s3ListObjectsByName = ({ bucket, marker, prev }) => {
+  console.log(`Getting all objects from bucket ${bucket}`);
+  const s3 = new AWS.S3({
+    region: 'us-east-1',
+  });
+  const params = {
+    Bucket: bucket,
+    Marker: marker,
+  };
+
+  return s3.listObjects(params).promise().then((data) => {
+    let objects = data.Contents;
+    console.log(`Found ${objects.length} objects...`);
+    if (prev) {
+      objects = prev.concat(objects);
+    }
+    if (data.IsTruncated) {
+      const { length } = data.Contents;
+      const mkr = data.Contents[length - 1].Key;
+      return s3ListObjectsByName({
+        bucket,
+        mkr,
+        prev: objects,
+      });
+    }
+    return objects;
+  });
+};
+
+const s3GetKey = async (bucket, key) => {
+  console.log(`Getting key ${key} from bucket ${bucket}`);
+  const s3 = new AWS.S3({
+    region: 'us-east-1',
+  });
+  const file = await s3.getObject({
+    Bucket: bucket,
+    Key: key,
+  }).promise();
+  return file;
+};
+
 module.exports = {
   sleep,
   extractAssetsFromAction,
@@ -478,4 +519,6 @@ module.exports = {
   updateTableMetadataByid,
   runKeywordSearch,
   s3PutObject,
+  s3ListObjectsByName,
+  s3GetKey,
 };
