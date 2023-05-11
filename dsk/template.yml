@@ -69,7 +69,7 @@ Resources:
       FunctionName: 'dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       Handler: ./src/handlers/handler.handler
       Runtime: nodejs16.x
-      Timeout: 600
+      Timeout: 900
       MemorySize: 256
       ReservedConcurrentExecutions: 0
       Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
@@ -92,7 +92,7 @@ Resources:
       MessageRetentionPeriod: 1209600
       QueueName: '_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
-      VisibilityTimeout: 300
+      VisibilityTimeout: 900
       DelaySeconds: 30
     Type: AWS::SQS::Queue
   DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
