@@ -129,7 +129,7 @@ const processInitialStage = async (action) => {
   // Upload Manifest File if any Assets were processed
   if (processedAssetIds.length) {
     const actionId = action.objectId;
-    const key = `${actionId}/${collectionId}/manifest.json`;
+    const key = `to-be-processed/${actionId}/${collectionId}/manifest.json`;
     const body = {
       actionId,
       collectionId,

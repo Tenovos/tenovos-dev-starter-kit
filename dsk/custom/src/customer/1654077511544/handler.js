@@ -214,7 +214,7 @@ const writeObjectToS3 = async (bucket, object) => new Promise((resolve, reject) 
   });
   const params = {
     Bucket: bucket,
-    Key: `${actionId}/${collectionId}/${objectId}.json`,
+    Key: `to-be-processed/${actionId}/${collectionId}/${objectId}.json`,
     Body: JSON.stringify(object),
     ContentType: 'application/json',
   };
