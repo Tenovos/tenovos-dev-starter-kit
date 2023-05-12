@@ -5,6 +5,7 @@
 const listEvents = require('./src/handlers/list-events');
 const ProcessHandler = require('./src/handlers/handler');
 const ProxyHandler = require('./src/handlers/proxy');
+const MonitorHandler = require('./src/handlers/monitor');
 const CustomHandler = require('./custom/src/customer/1654077511544/handler');
 const Utilities = require('./src/tools/utilities');
 
@@ -304,6 +305,33 @@ async function debugS3Get() {
   });
 }
 
+async function debugMonitor() {
+  console.log('debugging monitor');
+  await MonitorHandler.handler({
+    Records: [
+      {
+        messageId: '5de6631c-6daf-4b89-87bb-378bcfbdbebb',
+        receiptHandle: 'AQEBDwZm0glwsaQ2g76zM0329LcXuoL71Fyo7A1wQDvFLx45MgLjamQaSnLMaG7cunETdd5J6p9OVaHmCMWAiLn/+A3TCvDKNaSOD0lpamnM1SYo8DX/POuhDWTwH7Qtj8N9M0Qb2s9y4qdXMlsvagvGAm3hSvTQKZ4F+GjOLt6cVBEvYzyLB7H6AKcO5bop4kVrMjK2utGdzS5frnlEaMhlBU/ixkGkaEAUT2yHBYMinXwhOR1RusEGQyBNK9g8tidlEv6maVtawNFOc2k7iFPVyQ7+J899r3cr7UtVCMU8qX3yJ6GvBWmmoG4rgp93P9RJ+2+vFPdr2zSTYCUWBGg9uJgZmRHrlOtZ0hYmaTZ8wXMsLSbp282wiWpNQQ8CzT3u7sdVb/FZnybvEX6dasNlsw==',
+        body: '{"Records":[{"eventVersion":"2.1","eventSource":"aws:s3","awsRegion":"us-east-1","eventTime":"2023-05-12T02:39:10.347Z","eventName":"ObjectCreated:Put","userIdentity":{"principalId":"AWS:AROAURVER4ND3DEEPMGDI:dsk-proxyasync-function-1654077511544-pp-ils"},"requestParameters":{"sourceIPAddress":"3.236.70.59"},"responseElements":{"x-amz-request-id":"67SXCJ9PVMAJM9JV","x-amz-id-2":"6c6FNyY66ILORGh1gn64w4IKuIdPbMq+tOLx7vV7QtqW9DuijC9x7LY0KNPpbeEX633hebvM5zNG38WKyuS65zIa9VS22VeH"},"s3":{"s3SchemaVersion":"1.0","configurationId":"44ccc762-4133-4d7c-a68e-916eb16c1913","bucket":{"name":"dsk-1654077511544ppils-us-east-1","ownerIdentity":{"principalId":"ANQBBRPE6GR94"},"arn":"arn:aws:s3:::dsk-1654077511544ppils-us-east-1"},"object":{"key":"to-be-processed/8099d8df-4b7b-49e7-b79d-0c8234e60f63/5a5ba890-5dd0-4e16-bf2f-c802ad1e2a46/manifest.json","size":353,"eTag":"7160b18541c17848b4214e793dc573f1","sequencer":"00645DA6CE4872E0D2"}}}]}',
+        attributes: {
+          ApproximateReceiveCount: '1',
+          AWSTraceHeader: 'Root=1-645da6ba-aa10b66ad0330592b2be0885;Parent=5b29ad892fb4d306;Sampled=0',
+          SentTimestamp: '1683859151197',
+          SenderId: 'AIDAJHIPRHEMV73VRJEBU',
+          ApproximateFirstReceiveTimestamp: '1683859151211',
+        },
+        messageAttributes: {},
+        md5OfBody: '784c767bbb77e82bdeaf79193ebdb418',
+        eventSource: 'aws:sqs',
+        eventSourceARN: 'arn:aws:sqs:us-east-1:312803976007:custom1654077511544-pp-ils',
+        awsRegion: 'us-east-1',
+      },
+    ],
+  }, {
+    succeed() { console.log('succeeded via context'); },
+  });
+}
+
 (async () => {
   try {
     switch (action) {
@@ -324,6 +352,9 @@ async function debugS3Get() {
         break;
       case 's3Get':
         debugS3Get();
+        break;
+      case 'monitor':
+        await debugMonitor();
         break;
       default:
         console.log(`Invalid action[${action}]`);
