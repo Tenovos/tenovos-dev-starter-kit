@@ -114,7 +114,7 @@ Resources:
       QueueName: '_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
       VisibilityTimeout: 900
-      DelaySeconds: 30
+      DelaySeconds: 60
     Type: AWS::SQS::Queue
 ########################################################################################################
 #  Custom queue may need to move to nested stack at a later date                                       #
@@ -127,6 +127,7 @@ Resources:
       QueueName: 'custom_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
       VisibilityTimeout: 900
+      DelaySeconds: 300
     Type: AWS::SQS::Queue    
   DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
