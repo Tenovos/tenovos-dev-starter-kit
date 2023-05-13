@@ -1,0 +1,26 @@
+Export templates from avengers tenant
+1. Use lambda action-metadata-template-service 
+2. Use below body in "test" in lambda console replacing pertinent info
+{
+    "body": {
+        "requestType": "export",
+        "templateName": "Fix INDDs",
+        "sourceCustomerId": "1654077511544"
+    },
+    "requestContext": {
+        "authorizer": {
+            "userId": "9d81fedd-cd72-4f5a-bf15-39448cb3477b",
+            "roleId": "74d3c2d0-9b43-48ae-83cb-459dc8054a6e",
+            "customerId": "1654077511544",
+            "emailId": "chris-caldes@tenovos.com",
+            "groups": [
+                "c277b11a-1fa3-4743-bd40-82e8109f19fa"
+            ]
+        }
+    }
+}
+3. Review log output
+4. Download file from s3 where log output refers to i.e. bucket tenovos-export-metadata-config-partner
+5. Cleanse template of unnecessary system metadata etc.
+6. Add to config
+7. Update deploy script to use this to create

@@ -1,0 +1,740 @@
+{
+    "controlledVocabularies": [
+        {
+            "name": "Dynamic Role List",
+            "searchName": "dynamic_role_list",
+            "values": [
+                "External Library Access",
+                "Download",
+                "Share External Location",
+                "Proof Participation",
+                "View Management",
+                "Replace Preview",
+                "Request Inbox",
+                "Upload",
+                "Story Board Share Internal",
+                "Asset External Share",
+                "Proof Admin Inbox",
+                "Story Board View",
+                "Upload With Approval",
+                "Security Template Management",
+                "Product Store Management",
+                "Save Getty Asset to Content Store",
+                "Content Store",
+                "Channel Publish",
+                "Asset Transformations",
+                "Channel Admin",
+                "PDF Preview",
+                "Private Collections",
+                "Content Management",
+                "View Collections",
+                "Enhanced Filters",
+                "Proof Modification",
+                "User Preference",
+                "Share",
+                "Proof Submission Management",
+                "Story Board Management",
+                "Relationship",
+                "Story Board Share External",
+                "Clone Asset",
+                "Metadata Template Management",
+                "Insights Management",
+                "Action Management",
+                "User Management",
+                "Delete Rights Object",
+                "Proof Admin",
+                "Edit Metadata",
+                "Request Management",
+                "Private Saved Search",
+                "Admin Configuration Management",
+                "Share External Link/Embed Code",
+                "View Saved Search",
+                "Version Asset",
+                "Rights Maintenance",
+                "Bulk Operations",
+                "Rights Management",
+                "Rights User",
+                "View More",
+                "Metadata Export",
+                "Purge",
+                "Supporting Documents",
+                "Shared Saved Search",
+                "Delete",
+                "Shared Collections",
+                "Template Store Management",
+                "Proof Initiation"
+            ]
+        },
+        {
+            "name": "Enabled List",
+            "searchName": "enabled_list",
+            "values": [
+                "Yes",
+                "No"
+            ]
+        },
+        {
+            "name": "Action Type List",
+            "searchName": "action_type_list",
+            "values": [
+                "Asset Based Action",
+                "Web Based Action",
+                "Workflow Based Action"
+            ]
+        },
+        {
+            "name": "Context List",
+            "searchName": "context_list",
+            "values": [
+                "Single Asset",
+                "Bulk Asset",
+                "Collection"
+            ]
+        },
+        {
+            "name": "Dynamic Permission List",
+            "searchName": "dynamic_permission_list",
+            "values": [
+                "Request Download",
+                "Edit",
+                "Write",
+                "Edit Metadata",
+                "Replace Preview",
+                "Version Asset",
+                "Relationships",
+                "Proof Initiation",
+                "Associate to Asset",
+                "Auto Apply on Creation",
+                "Auto Apply on Approval",
+                "PDF Preview",
+                "Apply Metadata Template",
+                "Assign Security Template",
+                "View",
+                "Delete",
+                "Modify Rights",
+                "Apply",
+                "Download",
+                "Transform",
+                "Purge"
+            ]
+        },
+        {
+            "name": "Test Vocab",
+            "searchName": "test_vocab",
+            "values": [
+                "Test 1",
+                "Test 2",
+                "Test 3",
+                "Test 4",
+                "Test 5"
+            ]
+        }
+    ],
+    "attributes": [
+        {
+            "name": "Event - Asset Identifier",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": true,
+            "length": 10000,
+            "searchName": "asset_identifier"
+        },
+        {
+            "name": "Collection Identifier",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": true,
+            "length": 200,
+            "searchName": "collection_identifier"
+        },
+        {
+            "name": "Confirmation Message",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": true,
+            "length": 2000,
+            "searchName": "confirmation_message"
+        },
+        {
+            "name": "Privileges",
+            "facetable": false,
+            "isMultipleSelect": true,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "privileges",
+            "controlledVocabularySearchName": "dynamic_role_list"
+        },
+        {
+            "name": "Permissions",
+            "facetable": true,
+            "isMultipleSelect": true,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "permissions",
+            "controlledVocabularySearchName": "dynamic_permission_list"
+        },
+        {
+            "name": "Context",
+            "facetable": true,
+            "isMultipleSelect": true,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "context",
+            "controlledVocabularySearchName": "context_list"
+        },
+        {
+            "name": "Enabled",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "enabled",
+            "controlledVocabularySearchName": "enabled_list"
+        },
+        {
+            "name": "Action Type",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "action_type",
+            "controlledVocabularySearchName": "action_type_list"
+        },
+        {
+            "name": "Custom Action Type",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": true,
+            "length": 256,
+            "searchName": "custom_action_type"
+        },
+        {
+            "name": "Test Attribute",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "test_attribute",
+            "controlledVocabularySearchName": "test_vocab"
+        },
+        {
+            "name": "Test Attribute 2",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": true,
+            "length": 1000,
+            "searchName": "test_attribute_2"
+        },
+        {
+            "name": "Text Content",
+            "facetable": false,
+            "isRestricted": false,
+            "required": false,
+            "type": "externalContent",
+            "visible": true,
+            "searchName": "text_content"
+        },
+        {
+            "name": "System Metadata Templates",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_metadata_templates",
+            "controlledVocabularySearchName": "system_metadata_templates_list"
+        },
+        {
+            "name": "System Security Templates",
+            "facetable": true,
+            "isMultipleSelect": true,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_security_templates",
+            "controlledVocabularySearchName": "system_security_templates_list"
+        },
+        {
+            "name": "System Created By",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_created_by",
+            "controlledVocabularySearchName": "system_dynamic_user_profile_list"
+        },
+        {
+            "name": "System Created Epoch",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 250,
+            "searchName": "system_created_epoch"
+        },
+        {
+            "name": "System Created Date",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "date",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_created_date"
+        },
+        {
+            "name": "System Last Updated By",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_last_updated_by",
+            "controlledVocabularySearchName": "system_dynamic_user_profile_list"
+        },
+        {
+            "name": "System Last Updated Date",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "date",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_last_updated_date"
+        },
+        {
+            "name": "System Mime Type",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_mime_type",
+            "controlledVocabularySearchName": "system_mime_type_list"
+        },
+        {
+            "name": "System Content Type",
+            "facetable": true,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "type": "controlledVocabulary",
+            "typeahead": false,
+            "visible": true,
+            "searchName": "system_content_type",
+            "controlledVocabularySearchName": "system_content_type_list"
+        },
+        {
+            "name": "System Is Federated",
+            "type": "controlledVocabulary",
+            "searchName": "system_is_federated",
+            "controlledVocabularySearchName": "system_yesno_list"
+        },
+        {
+            "name": "System Skip Transcode",
+            "type": "controlledVocabulary",
+            "searchName": "system_skip_transcode",
+            "controlledVocabularySearchName": "system_yesno_list"
+        },
+        {
+            "name": "System Dimensions",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "[\"imageSize\",\"${maxPageSizeW}x${maxPageSizeH}\"]",
+            "type": "text",
+            "typeahead": false,
+            "visible": true,
+            "length": 200,
+            "searchName": "system_dimensions"
+        },
+        {
+            "name": "Link Object ID",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 50,
+            "searchName": "link_object_id"
+        },
+        {
+            "name": "Link Filename",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 200,
+            "searchName": "link_filename"
+        },
+        {
+            "name": "Link File Status",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 200,
+            "searchName": "link_file_status"
+        },
+        {
+            "name": "Link File Path",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 500,
+            "searchName": "link_file_path"
+        },
+        {
+            "name": "Link Resource URI",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 500,
+            "searchName": "link_resource_uri"
+        },
+        {
+            "name": "Link File Size",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 200,
+            "searchName": "link_file_size"
+        },
+        {
+            "name": "Link MD5",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 200,
+            "searchName": "link_md5"
+        },
+        {
+            "name": "Link File Index",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 100,
+            "searchName": "link_index"
+        },
+        {
+            "name": "Link Type",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 100,
+            "searchName": "link_type"
+        },
+        {
+            "name": "Link Dimension",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 100,
+            "searchName": "link_dimension"
+        },
+        {
+            "name": "Link Mime Type",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 200,
+            "searchName": "link_mime_type"
+        },
+        {
+            "name": "Link Unconfirmed Object IDs",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 2000,
+            "searchName": "link_unconfirmed_object_ids"
+        },
+        {
+            "name": "System Process Source",
+            "facetable": false,
+            "isMultipleSelect": false,
+            "isRestricted": false,
+            "required": false,
+            "sortByHitCount": false,
+            "techMetaMapping": "",
+            "type": "text",
+            "typeahead": false,
+            "visible": false,
+            "length": 200,
+            "searchName": "system_process_source"
+        }
+    ],
+    "cascades": [],
+    "tables": [
+        {
+            "name": "System Layout Links",
+            "tableNameVisible": true,
+            "visible": true,
+            "type": "tableAttribute",
+            "isSingleRow": false,
+            "searchName": "system_layout_links",
+            "attributeSearchNames": [
+                "link_object_id",
+                "link_filename",
+                "link_file_status",
+                "link_file_path",
+                "link_resource_uri",
+                "link_file_size",
+                "link_md5",
+                "link_index",
+                "link_type",
+                "link_dimension",
+                "link_mime_type",
+                "link_unconfirmed_object_ids"
+            ]
+        }
+    ],
+    "groups": [
+        {
+            "name": "Action",
+            "searchName": "action",
+            "attributeSearchNames": [
+                "asset_identifier",
+                "collection_identifier",
+                "confirmation_message",
+                "privileges",
+                "permissions",
+                "context",
+                "enabled",
+                "action_type"
+            ]
+        },
+        {
+            "name": "Custom Action Group",
+            "searchName": "custom_action_group",
+            "attributeSearchNames": [
+                "custom_action_type"
+            ]
+        },
+        {
+            "name": "Test Group",
+            "searchName": "test_group",
+            "attributeSearchNames": [
+                "test_attribute",
+                "test_attribute_2"
+            ]
+        },
+        {
+            "name": "System Group",
+            "searchName": "system_group",
+            "attributeSearchNames": [
+                "text_content",
+                "system_metadata_templates",
+                "system_security_templates",
+                "system_created_by",
+                "system_created_epoch",
+                "system_created_date",
+                "system_last_updated_by",
+                "system_last_updated_date",
+                "system_mime_type",
+                "system_content_type",
+                "system_is_federated",
+                "system_skip_transcode",
+                "system_dimensions",
+                "system_layout_links",
+                "system_process_source"
+            ]
+        }
+    ],
+    "templates": [
+        {
+            "name": "Fix INDDs",
+            "groupSearchNames": [
+                "action",
+                "custom_action_group",
+                "test_group",
+                "system_group"
+            ],
+            "templateType": [
+                "action"
+            ],
+            "attributesDefaultValue": [
+                {
+                    "attributeSearchName": "privileges",
+                    "attributeValue": [
+                        "Edit Metadata"
+                    ]
+                },
+                {
+                    "attributeSearchName": "permissions",
+                    "attributeValue": [
+                        "Edit Metadata"
+                    ]
+                },
+                {
+                    "attributeSearchName": "context",
+                    "attributeValue": [
+                        "Collection"
+                    ]
+                },
+                {
+                    "attributeSearchName": "enabled",
+                    "attributeValue": "Yes"
+                },
+                {
+                    "attributeSearchName": "custom_action_type",
+                    "attributeValue": "Fix INDDs"
+                }
+            ]
+        }
+    ]
+}

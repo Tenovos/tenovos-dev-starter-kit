@@ -85,13 +85,6 @@ then
   exit 1
 fi
 
-TEMPLATE_IMPORT_BUCKET="tenovos-export-metadata-config-$CORE_PLATFORM_ENVIRONMENT_NAME"
-echo "Uploading metadata templates to s3 bucket [$TEMPLATE_IMPORT_BUCKET] at location [$STACK_NAME]"
-ASSET_LOC_TEMPLATE="s3://$TEMPLATE_IMPORT_BUCKET/$STACK_NAME/asset-localization-template.json"
-
-# Metadata Required for Feature
-aws s3 cp config/asset-localization-template.json $ASSET_LOC_TEMPLATE --profile $CORE_PLATFORM_ENVIRONMENT
-
 # Copy fonts to customer bucket for use with feature
 #SAVEIFS=$IFS
 #IFS=$(echo -en "\n\b")
@@ -206,7 +199,14 @@ then
   echo "Create Metadata is set to [$CREATE_METADATA]..."
   if [ "$CREATE_METADATA" = "yes" ]
   then
-    echo "Creating localization templates in tenant..."
+    TEMPLATE_IMPORT_BUCKET="tenovos-export-metadata-config-$CORE_PLATFORM_ENVIRONMENT_NAME"
+    echo "Uploading metadata templates to s3 bucket [$TEMPLATE_IMPORT_BUCKET] at location [$STACK_NAME]"
+    ASSET_LOC_TEMPLATE="s3://$TEMPLATE_IMPORT_BUCKET/$STACK_NAME"
+
+    # Metadata Required for Feature
+    aws s3 cp config/metadata-templates/* $ASSET_LOC_TEMPLATE/ --profile $CORE_PLATFORM_ENVIRONMENT
+
+    echo "Creating metadata templates in tenant..."
     AWS_PROFILE=$CORE_PLATFORM_ENVIRONMENT node scripts/setup.js test create-metadata $CUSTOMER_ID $STACK_NAME $ADMIN_USER_ID
   fi
 
