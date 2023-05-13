@@ -247,10 +247,10 @@ Resources:
 ########################################################################################################
 #  The custom nested stack section is for feature specific infrastructure and code references.         #
 ########################################################################################################
-  DskCustomNestedStack_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: custom/template.yml
+#  DskCustomNestedStack_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+#    Type: AWS::CloudFormation::Stack
+#    Properties:
+#      TemplateURL: custom/template.yml
 Outputs:
   ApiGatewayUrl:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/proxy"
