@@ -28,12 +28,16 @@ const handler = async (event, context) => {
         for (let j = 0; j < objectIds.length; j += 1) {
             const object = objectIds[j];
             const assetEntryKey = `${prefix}/${actionId}/${collectionId}/${object}.json`;
-            // eslint-disable-next-line no-await-in-loop
-            const assetEntry = await Utilities.s3GetKey(bucket, assetEntryKey);
-            console.log(typeof assetEntry.Body);
-            console.log(assetEntry.Body.toString());
-            const partialCsv = JSON.parse(assetEntry.Body.toString()).csv;
-            actionCsv.push(...partialCsv);
+            try {
+                // eslint-disable-next-line no-await-in-loop
+                const assetEntry = await Utilities.s3GetKey(bucket, assetEntryKey);
+                console.log(typeof assetEntry.Body);
+                console.log(assetEntry.Body.toString());
+                const partialCsv = JSON.parse(assetEntry.Body.toString()).csv;
+                actionCsv.push(...partialCsv);
+            } catch (error) {
+                console.error(`failed to get key ${assetEntryKey}`);
+            }
         }
         await Utilities.s3PutObject(bucket, `${prefix}/${actionId}/${collectionId}/manifest-tsv.json`, {
             tsv: actionCsv,
