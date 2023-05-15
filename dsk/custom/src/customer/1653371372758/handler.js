@@ -3,99 +3,96 @@ const AWS = require('aws-sdk');
 const Fetch = require('node-fetch');
 const Path = require('path');
 const Utilities = require('../../../../src/tools/utilities');
-// const AppAuth = require('../../../src/libs/auth');
 
-// const processInitialStage = async (action, stage) => {
-//   // console.log('processInitialStage', asset, stage);
+function search(vals, dataOverride, limit) {
+  console.log(`entered search...vals are ${vals}`);
+  console.log('ABCDEFJHI');
+  const values = JSON.parse(JSON.stringify(vals));
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    try {
+      //            values.push("-migration_batch_search_key:TROUBLESHOOTING");
+      const data = (!dataOverride) ? {
+        from: 0,
+        searchTerm: values,
+        sortBy: [
+          {
+            metadataDefinitionId: 'createdEpoch',
+            order: 'desc',
+          },
+        ],
+        operation: 'OR',
+        excludes: [
+          'technicalMetadataDocument', 'metadataDocument.text_content',
+        ],
+      } : dataOverride;
 
-//   try {
-//     // Extract Collection ID
-//     const collectionId = action.metadataDenormalized.asset_identifier;
-//     if (!collectionId) {
-//       throw new Error('Missing Collection ID from Action asset_identifier');
-//     }
+      const apiSearchRequestBody = {
+        //        apiURL: this.config.apiUrl,
+        //        apiKey: this.config.apiKey,
+        accessToken: 'ignore',
+        authorization: 'ignore',
+        payload: data,
+      };
 
-//     // Get Collection
-//     const collection = await Utilities.getCollection(collectionId, Fetch);
+      let allAssets = [];
+      const pagesize = 50;
+      let assetCount = 0;
+      do {
+        // eslint-disable-next-line no-await-in-loop
+        const a = await Utilities.runKeywordSearch(data.searchTerm, data, Fetch);
 
-//     // Retrieve Assets from Collection
-//     const { collectionDocument } = collection;
+        //        const a = await apiService.search(apiSearchRequestBody);
+        const assets = a;
+        assetCount = assets.result.length;
+        console.log(`Search returned asset count ${assetCount} with from of ${apiSearchRequestBody.payload.from} and num values of ${values.length}`);
+        if (assets.result.length > 0) {
+          allAssets = allAssets.concat(assets.result);
+          apiSearchRequestBody.payload.from += 50;
+          if (limit && allAssets.length >= limit) {
+            break;
+          }
+          if (assets.totalCount === allAssets.length) {
+            break;
+          }
+        } else {
+          break;
+        }
+      } while (assetCount == pagesize);
+      const resultsArr = allAssets;
+      for (let i = 0; i < values.length; i++) {
+        const value = values[i].substring(0, values[i].length - 1); // remove space for search work around
+        if (this.searchMap[value] === undefined) {
+          this.searchMap[value] = {
+            count: 0,
+            path: value,
+          };
+        }
+        for (let j = 0; j < resultsArr.length; j++) {
+          const resultStr = JSON.stringify(resultsArr[j]);
+          //                        const relationships = await this.getRelationships(resultsArr[j].objectId, session);
+          //                        const versions = await this.getVersions(resultsArr[j].objectId, session);
 
-//     // Loop to Send Messages for Assets
-//     const chunkSize = 10;
-//     const fileIdChunks = _.chunk(collectionDocument, chunkSize);
-//     const assets = [];
-//     const skipFileIds = [
-//       '00000000-0000-0000-0000-000000000000',
-//     ];
-//     const validFileExtensions = [
-//       '.indd',
-//     ];
-
-//     for (let i = 0; i < fileIdChunks.length; i += 1) {
-//       const fileIdChunk = fileIdChunks[i];
-//       const promises = [];
-
-//       for (let j = 0; j < fileIdChunk.length; j += 1) {
-//         const fileId = fileIdChunk[j];
-//         if (!skipFileIds.includes(fileId)) {
-//           promises.push(Utilities.getAsset(fileId, Fetch));
-//         }
-//       }
-
-//       // eslint-disable-next-line no-await-in-loop
-//       const assetChunk = await Promise.all(promises);
-//       assets.push(...assetChunk);
-//     }
-
-//     // const assetIds = assets.map((asset) => asset.objectId);
-//     // console.log('Asset Object IDs to process', assetIds);
-//     const nextStage = 'process-asset';
-
-//     // Send Notifications for All Assets
-//     for (let i = 0; i < assets.length; i += 1) {
-//       const asset = assets[i];
-//       const { customerId, objectId, filename } = asset;
-
-//       const fileExt = Path.extname(filename.toLowerCase());
-
-//       // Only send message for Valid File Types
-//       if (validFileExtensions.includes(fileExt.toLowerCase())) {
-//         const messageBody = {
-//           customerId,
-//           objectId,
-//           filename,
-//           stage: nextStage,
-//         };
-//         const params = {
-//           DelaySeconds: 0,
-//           MessageBody: JSON.stringify(messageBody),
-//           QueueUrl: process.env.QUEUE_URL,
-//         };
-
-//         console.log('Sending SQS Message:', params);
-
-//         // const sqsClient = new AWS.SQS({
-//         //   region: 'us-east-1',
-//         // });
-
-//         // const result = await sqsClient.sendMessage(params).promise();
-//         // console.log('added to queue', result);
-//       } else {
-//         console.log(`Skip sending ${nextStage} Notification for Asset:`, {
-//           customerId,
-//           objectId,
-//           filename,
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     console.error('Failed to process Collection and send Asset Messages', {
-//       asset: action,
-//       stage,
-//     }, error);
-//   }
-// };
+          if (resultStr.indexOf(value) > -1) {
+            const fn = path.basename(value);
+            this.searchMap[value].count += 1;
+            this.searchMap[value].path = value;
+            this.searchMap[value].objectId = resultsArr[j].objectId;
+            this.searchMap[value].fileId = resultsArr[j].fileId;
+            this.searchMap[value].originalFileId = resultsArr[j].originalFileId;
+            this.searchMap[value].filename = resultsArr[j].filename || 'N/A';
+            this.searchMap[value].fnMatches = (fn === resultsArr[j].filename) ? 'Yes' : 'No';
+            this.searchMap[value].renditions = (resultsArr[j].renditions && resultsArr[j].imageThumb && resultsArr[j].imageThumb.indexOf('/web/asset/') > -1 ? 'No' : 'Yes');
+          }
+        }
+      }
+      if (allAssets) { resolve(allAssets); } else { resolve([]); }
+    } catch (error) {
+      console.log(`Error in search ${JSON.stringify(error)}`);
+      reject(`Error ${JSON.stringify(error)}`);
+    }
+  });
+}
 
 const processAsset = async (asset) => {
   console.log('Processing Asset', asset.objectId);
@@ -118,20 +115,21 @@ const processAsset = async (asset) => {
       } else {
         console.log(`Need to find link for ${missingLinkFilename}`);
         const searchTerm = [];
-
         const filename = missingLinkFilename.replace('-fpo.png', '');
         searchTerm.push(`${filename} `);
+        if (missingLinkFilename !== filename) { searchTerm.push(missingLinkFilename); }
+
         // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
         const searchOptions = {
           excludes: [
             'metadataDocument.text_content',
-            'technicalMetadata',
+            'technicalMetadataDocument',
           ],
         };
 
         // Search for Placed Graphic Assets
         // eslint-disable-next-line no-await-in-loop
-        const searchResults = await Utilities.runKeywordSearch(searchTerm, searchOptions, Fetch);
+        const searchResults = await search(searchTerm, false, 50);
         const { result } = searchResults;
         console.log(`Search returned ${result.length} Assets`);
 
@@ -141,7 +139,7 @@ const processAsset = async (asset) => {
           let skipAsset = false;
 
           // Skip Linked INDD Files
-          if (pgAsset.filename.toLowerCase().endsWith('.indd')) {
+          if (pgAsset.filename.toLowerCase() !== filename.toLowerCase()) {
             skipAsset = true;
           }
 
