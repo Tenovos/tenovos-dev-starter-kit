@@ -60,36 +60,36 @@ function search(vals, dataOverride, limit) {
         }
       } while (assetCount == pagesize);
       const resultsArr = allAssets;
-      for (let i = 0; i < values.length; i++) {
-        const value = values[i].substring(0, values[i].length - 1); // remove space for search work around
-        if (this.searchMap[value] === undefined) {
-          this.searchMap[value] = {
-            count: 0,
-            path: value,
-          };
-        }
-        for (let j = 0; j < resultsArr.length; j++) {
-          const resultStr = JSON.stringify(resultsArr[j]);
-          //                        const relationships = await this.getRelationships(resultsArr[j].objectId, session);
-          //                        const versions = await this.getVersions(resultsArr[j].objectId, session);
+      // for (let i = 0; i < values.length; i++) {
+      //   const value = values[i].substring(0, values[i].length - 1); // remove space for search work around
+      //   if (this.searchMap[value] === undefined) {
+      //     this.searchMap[value] = {
+      //       count: 0,
+      //       path: value,
+      //     };
+      //   }
+      //   for (let j = 0; j < resultsArr.length; j++) {
+      //     const resultStr = JSON.stringify(resultsArr[j]);
+      //     //                        const relationships = await this.getRelationships(resultsArr[j].objectId, session);
+      //     //                        const versions = await this.getVersions(resultsArr[j].objectId, session);
 
-          if (resultStr.indexOf(value) > -1) {
-            const fn = path.basename(value);
-            this.searchMap[value].count += 1;
-            this.searchMap[value].path = value;
-            this.searchMap[value].objectId = resultsArr[j].objectId;
-            this.searchMap[value].fileId = resultsArr[j].fileId;
-            this.searchMap[value].originalFileId = resultsArr[j].originalFileId;
-            this.searchMap[value].filename = resultsArr[j].filename || 'N/A';
-            this.searchMap[value].fnMatches = (fn === resultsArr[j].filename) ? 'Yes' : 'No';
-            this.searchMap[value].renditions = (resultsArr[j].renditions && resultsArr[j].imageThumb && resultsArr[j].imageThumb.indexOf('/web/asset/') > -1 ? 'No' : 'Yes');
-          }
-        }
-      }
+      //     if (resultStr.indexOf(value) > -1) {
+      //       const fn = path.basename(value);
+      //       this.searchMap[value].count += 1;
+      //       this.searchMap[value].path = value;
+      //       this.searchMap[value].objectId = resultsArr[j].objectId;
+      //       this.searchMap[value].fileId = resultsArr[j].fileId;
+      //       this.searchMap[value].originalFileId = resultsArr[j].originalFileId;
+      //       this.searchMap[value].filename = resultsArr[j].filename || 'N/A';
+      //       this.searchMap[value].fnMatches = (fn === resultsArr[j].filename) ? 'Yes' : 'No';
+      //       this.searchMap[value].renditions = (resultsArr[j].renditions && resultsArr[j].imageThumb && resultsArr[j].imageThumb.indexOf('/web/asset/') > -1 ? 'No' : 'Yes');
+      //     }
+      //   }
+      // }
       if (allAssets) { resolve(allAssets); } else { resolve([]); }
     } catch (error) {
-      console.log(`Error in search ${JSON.stringify(error)}`);
-      reject(`Error ${JSON.stringify(error)}`);
+      console.error('Error in search: ', error);
+      reject(new Error(`Error ${error}`));
     }
   });
 }
@@ -130,7 +130,7 @@ const processAsset = async (asset) => {
         // Search for Placed Graphic Assets
         // eslint-disable-next-line no-await-in-loop
         const searchResults = await search(searchTerm, false, 50);
-        const { result } = searchResults;
+        const result = searchResults;
         console.log(`Search returned ${result.length} Assets`);
 
         // Loop to Extract Missing Links
