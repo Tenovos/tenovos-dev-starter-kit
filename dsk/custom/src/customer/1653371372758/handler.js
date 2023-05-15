@@ -45,6 +45,7 @@ function search(vals, dataOverride, limit) {
         //        const a = await apiService.search(apiSearchRequestBody);
         const assets = a;
         assetCount = assets.result.length;
+        // eslint-disable-next-line max-len
         console.log(`Search returned asset count ${assetCount} with from of ${apiSearchRequestBody.payload.from} and num values of ${values.length}`);
         if (assets.result.length > 0) {
           allAssets = allAssets.concat(assets.result);
@@ -58,8 +59,8 @@ function search(vals, dataOverride, limit) {
         } else {
           break;
         }
-      } while (assetCount == pagesize);
-      const resultsArr = allAssets;
+      } while (assetCount === pagesize);
+      // const resultsArr = allAssets;
       // for (let i = 0; i < values.length; i++) {
       //   const value = values[i].substring(0, values[i].length - 1); // remove space for search work around
       //   if (this.searchMap[value] === undefined) {
@@ -120,18 +121,42 @@ const processAsset = async (asset) => {
         if (missingLinkFilename !== filename) { searchTerm.push(missingLinkFilename); }
 
         // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
-        const searchOptions = {
-          excludes: [
-            'metadataDocument.text_content',
-            'technicalMetadataDocument',
-          ],
-        };
+        // const searchOptions = {
+        //   excludes: [
+        //     'metadataDocument.text_content',
+        //     'technicalMetadataDocument',
+        //   ],
+        // };
+
+        // Check to Search for Unconfirmed Assets
+        try {
+          // Check for Uncomfirmed Object IDs
+          const pgUnconfirmedObjectIds = JSON.parse(
+            _.get(linkRow, 'link_unconfirmed_object_ids', '[]'),
+          );
+          // Retrieve Unconfirmed Assets
+          if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
+            searchTerm.push(pgUnconfirmedObjectIds);
+          }
+        } catch (error) {
+          console.error('Failed to extract Unconfirmed Links from Asset', {
+            objectId: asset.objectId,
+          });
+        }
 
         // Search for Placed Graphic Assets
         // eslint-disable-next-line no-await-in-loop
         const searchResults = await search(searchTerm, false, 50);
         const result = searchResults;
         console.log(`Search returned ${result.length} Assets`);
+
+        // Use Unknown Asset if no Assets found
+        if (!searchResults.length) {
+          const unknownAsset = {
+            objectId: 'unknown',
+          };
+          searchResults.push(unknownAsset);
+        }
 
         // Loop to Extract Missing Links
         for (let j = 0; j < result.length; j += 1) {
@@ -147,28 +172,11 @@ const processAsset = async (asset) => {
           const inddFilename = asset.filename;
           const inddLinkGroup = _.get(asset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
           const inddRecId = _.get(asset, 'technicalMetadata.image_metadata.recordId', 'unknown');
-          let pgObjIds = [
-            pgAsset.objectId,
-          ];
+          const pgObjId = pgAsset.objectId;
           const pgFlName = pgAsset.filename;
           const pgFlSize = _.get(pgAsset, 'technicalMetadata.tenovos_metadata.fileSizeInBytes', 'unknown');
           const pgUsedInd = _.get(pgAsset, 'technicalMetadata.image_metadata.usedIn', 'unknown');
           const pgLinkGroup = _.get(pgAsset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
-
-          try {
-            // Check for Uncomfirmed Object IDs
-            const pgUnconfirmedObjectIds = JSON.parse(
-              _.get(pgAsset, 'metadataDenormalized.system_layout_links.link_unconfirmed_object_ids', '[]'),
-            );
-            // Use Unconfirmed Object IDs instead of Filename if exists
-            if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
-              pgObjIds = pgUnconfirmedObjectIds;
-            }
-          } catch (error) {
-            console.warn('Failed to extract Unconfirmed Links from Asset', {
-              objectId: asset.objectId,
-            });
-          }
 
           // pgCandidate.filename !== 'Augmented Icon_100.ai'
           // if (!pgAsset || !pgAsset.technicalMetadata || !pgAsset.technicalMetadata.image_metadata
@@ -178,17 +186,12 @@ const processAsset = async (asset) => {
 
           // Add Missing Link if Not Skipping Asset
           if (!skipAsset) {
-            // Loop to create Missing Links for Each Link Object ID
-            for (let k = 0; k < pgObjIds.length; k += 1) {
-              const pgObjId = pgObjIds[k];
+            const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
+              + `\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
+              + `\t${pgUsedInd}\t${pgLinkGroup}`;
 
-              const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
-                + `\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
-                + `\t${pgUsedInd}\t${pgLinkGroup}`;
-
-              // Add Missing Link to List
-              missingLinks.push(missingLink);
-            }
+            // Add Missing Link to List
+            missingLinks.push(missingLink);
           }
         }
       }
