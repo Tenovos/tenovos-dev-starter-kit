@@ -165,7 +165,7 @@ const runKeywordSearch = async (searchTerm, options, nodeFetch) => {
   };
   console.log(`Calling nodeFetch with request url [${request.url}] and request [${JSON.stringify(request)}]`);
   const response = await nodeFetch(request.url, request);
-  if (!response.ok) {
+  if (!response.ok && response.status !== 404) {
     throw new Error(
       `HTTP error! status: ${response.status} statusText: ${response.statusText} `,
     );

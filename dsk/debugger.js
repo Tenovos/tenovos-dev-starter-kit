@@ -69,6 +69,27 @@ const runHandler = async () => {
       {
         Records: [
           {
+            messageId: 'a385e08e-defe-4c57-bd71-11fc44c54c3b',
+            receiptHandle: 'AQEB40bXkcQsWbk2n8FMQ3iLtbyVlkJsJiXZoTgnPOyzrhnt6ryRjg5iwGHKCTvcgJAFiVvbHDrSzPRjTiFtZh+y354KPgubNNmpkBehoR8FcWujl00nRiU8fnpttB5VsUKMZQfJOBOkJOLL2kx9uUC4Jj3tzc7TqYN9mv1LC5VV7lOI5higljYARspxEeGu7LPGVmhhQ8jZ2vXu8UK8nfSCra7KQIYG8FmxuKxZ1vkk5kjdfmjKy7W/fI/RpHRNLFL2NyfSwcQT5mAUTVOt7oSIesOB8j9Q613cmW6NkAWYIJt6Y+4xOXd8xFJXIioKNKghAE7I1iJ4u26FvxgEOKSnUg2XDWtN5FyHK1xeVUqLW6qqqz7Nbr0X2EdicqmHHazHTFbjbxfLtJwoyLC79mLPRA==',
+            body: '{"customerId":"1653371372758","actionId":"be5528fc-f2cf-4dad-8195-3df90938cfbd","collectionId":"df34b0cd-1b59-45d8-9440-2a28bf90966d","objectId":"2e7b9a92-a9cb-4787-8e17-ec0ba43ac738","filename":"102N_04_CBK_EN.indd","stage":"process-asset"}',
+            attributes: {
+              ApproximateReceiveCount: '1',
+              AWSTraceHeader: 'Root=1-64623d51-bb418a972d8e862c5611e4ec;Parent=2af1f3df20f2549a;Sampled=0;Lineage=e9455b2d:0',
+              SentTimestamp: '1684159831658',
+              SenderId: 'AROAZ343PFU2OKOFKXLWC:dsk-proxyasync-function-1653371372758-pp-ilsprod',
+              ApproximateFirstReceiveTimestamp: '1684159831660',
+            },
+            messageAttributes: {},
+            md5OfBody: '049ae07dd474d46156f17d9f07f8ecf2',
+            eventSource: 'aws:sqs',
+            eventSourceARN: 'arn:aws:sqs:us-east-1:678394015028:1653371372758-pp-ilsprod',
+            awsRegion: 'us-east-1',
+          },
+        ],
+      },
+      {
+        Records: [
+          {
             messageId: '0d89ffa5-96e6-4d7f-9fb2-1b734fb50a72',
             receiptHandle: 'AQEBuzivb5yt0kjZWT7nnTZS8CjHo+NqyoViIs6kXKg1Ppw+p4aNeZTB7JdE6TuQBB0ktGW22RCEDL70sTRhtVBa6NaMWAwVHTEc14/I8ql+IdVQLTLzC7Omyron0QdQmw/ugg+fWdUxxK/CZR25jw9sUW+TsGa6KwsiPBcNQyqX9X3kQgdgzoIK941Z6EnktK+kDHPddjiswJxZZ0TPFZP0Y6/ze7ReIsPRSWypg5OD1dm7l5llKUq6f8C7+J0F3CcK3UuMQM5P5+VyAq5/3ujLoNFrXMGtsiZpDHw0GQ3WqqnIP4oTZCQyfzkBj8aeVZpYE3Gs43xxXsD7Fm8MGNql05o2eyo4sLxoeP098v7cgHFv1bHSr9QNS9NWW2gDTL6qWU3eVU4jB4U9iT2/DOYPuw==',
             body: '{"customerId":"1654077511544","actionId":"1a8240ab-8e87-4ece-9db1-dbdfd123eaeb","collectionId":"5a5ba890-5dd0-4e16-bf2f-c802ad1e2a46","objectId":"07228eee-8af7-49f0-8984-c516e68ace1e","filename":"102N_14_TSG_EN.indd","stage":"process-asset"}',
