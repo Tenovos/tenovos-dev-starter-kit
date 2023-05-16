@@ -24,7 +24,7 @@ Resources:
           CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
           MODE: "CLOUD"
-          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+          CONFIG_BUCKET: !Ref DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'
           ASYNC_LAMBDA: 'dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
   DskProxyAsyncFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
@@ -42,7 +42,7 @@ Resources:
           CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
           MODE: "CLOUD"
-          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+          CONFIG_BUCKET: !Ref DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
           QUEUE_URL: !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueUrl'          
   DskListEventsFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
@@ -84,7 +84,7 @@ Resources:
           CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
           MODE: "CLOUD"
-          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+          CONFIG_BUCKET: !Ref DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
   DskMonitorCsvAggFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
@@ -106,7 +106,7 @@ Resources:
           CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
           MODE: "CLOUD"
-          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+          CONFIG_BUCKET: !Ref DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
   DskMonitorCsvIngestFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
@@ -128,7 +128,7 @@ Resources:
           CUSTOMER_ID: '_CUSTOMERID_'
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
           MODE: "CLOUD"
-          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+          CONFIG_BUCKET: !Ref DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
   DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
       MaximumMessageSize: 262144
@@ -219,8 +219,8 @@ Resources:
                 Action:
                   - s3:*            
                 Resource: 
-                  - !Sub 'arn:aws:s3:::dsk-_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1'
-                  - !Sub 'arn:aws:s3:::dsk-_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1/*'
+                  - !Sub 'arn:aws:s3:::dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1'
+                  - !Sub 'arn:aws:s3:::dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1/*'
             Version: '2012-10-17'
           PolicyName: dsk-policy-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
       RoleName: dsk-role-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
@@ -265,10 +265,10 @@ Resources:
       Queues:
         - !GetAtt 'DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueName'
     Type: AWS::SQS::QueuePolicy    
-  DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+  DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: dsk-_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1
+      BucketName: !Sub "dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_${AccountId}-us-east-1"
 ########################################################################################################
 #  The below notification is not necessarily required for the starter it and can be removed so         #
 #  unnecessary message publishes are avoided (in which case also remove the queue)                     #
@@ -283,7 +283,7 @@ Resources:
                   - Name: suffix
                     Value: 'manifest.json'
           - Event: s3:ObjectCreated:*
-            Queue: !GetAtt 'DskQueueCustomIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn' 
+            Queue: !GetAtt 'DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn' 
             Filter:
               S3Key:
                 Rules:
@@ -329,4 +329,4 @@ Outputs:
     Description: "Quick access to queue"
   ConfigBucket:
     Description: 'Bucket created for the DSK to contain configs or for any purpose required by the integration'
-    Value: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+    Value: !Ref DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
