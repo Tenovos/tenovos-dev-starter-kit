@@ -117,17 +117,6 @@
                 "Transform",
                 "Purge"
             ]
-        },
-        {
-            "name": "Test Vocab",
-            "searchName": "test_vocab",
-            "values": [
-                "Test 1",
-                "Test 2",
-                "Test 3",
-                "Test 4",
-                "Test 5"
-            ]
         }
     ],
     "attributes": [
@@ -256,34 +245,6 @@
             "visible": true,
             "length": 256,
             "searchName": "custom_action_type"
-        },
-        {
-            "name": "Test Attribute",
-            "facetable": true,
-            "isMultipleSelect": false,
-            "isRestricted": false,
-            "required": false,
-            "sortByHitCount": false,
-            "techMetaMapping": "",
-            "type": "controlledVocabulary",
-            "typeahead": false,
-            "visible": true,
-            "searchName": "test_attribute",
-            "controlledVocabularySearchName": "test_vocab"
-        },
-        {
-            "name": "Test Attribute 2",
-            "facetable": false,
-            "isMultipleSelect": false,
-            "isRestricted": false,
-            "required": false,
-            "sortByHitCount": false,
-            "techMetaMapping": "",
-            "type": "text",
-            "typeahead": false,
-            "visible": true,
-            "length": 1000,
-            "searchName": "test_attribute_2"
         },
         {
             "name": "Text Content",
@@ -666,14 +627,6 @@
             ]
         },
         {
-            "name": "Test Group",
-            "searchName": "test_group",
-            "attributeSearchNames": [
-                "test_attribute",
-                "test_attribute_2"
-            ]
-        },
-        {
             "name": "System Group",
             "searchName": "system_group",
             "attributeSearchNames": [
@@ -701,7 +654,6 @@
             "groupSearchNames": [
                 "action",
                 "custom_action_group",
-                "test_group",
                 "system_group"
             ],
             "templateType": [
