@@ -85,11 +85,11 @@ Resources:
           PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
           MODE: "CLOUD"
           CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
-  DskMonitorCustomFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+  DskMonitorCsvAggFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: 'dsk-monitor-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
-      Handler: ./src/handlers/monitor.handler
+      FunctionName: 'dsk-monitorcsvagg-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      Handler: ./src/handlers/monitor-csv-agg.handler
       Runtime: nodejs16.x
       Timeout: 900
       MemorySize: 256
@@ -99,7 +99,29 @@ Resources:
         QueueEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt 'DskQueueCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+            Queue: !GetAtt 'DskQueueCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+            BatchSize: 1
+      Environment:
+        Variables:
+          CUSTOMER_ID: '_CUSTOMERID_'
+          PUBLISHING_ACCOUNT: '_PUBLISHING_ACCOUNT_'
+          MODE: "CLOUD"
+          CONFIG_BUCKET: !Ref DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_
+  DskMonitorCsvIngestFunction_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: 'dsk-monitorcsvingest-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      Handler: ./src/handlers/monitor-csv-ingest.handler
+      Runtime: nodejs16.x
+      Timeout: 900
+      MemorySize: 256
+      ReservedConcurrentExecutions: 0
+      Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+      Events:
+        QueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt 'DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
             BatchSize: 1
       Environment:
         Variables:
@@ -119,16 +141,24 @@ Resources:
 ########################################################################################################
 #  Custom queue may need to move to nested stack at a later date                                       #
 ########################################################################################################    
-  DskQueueCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+  DskQueueCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
-      DelaySeconds: 0
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 1209600
-      QueueName: 'custom_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      QueueName: 'customcsvagg_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
       VisibilityTimeout: 900
-      DelaySeconds: 300
+      DelaySeconds: 900
     Type: AWS::SQS::Queue    
+  DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+    Properties:
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 1209600
+      QueueName: 'customcsvingest_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
+      ReceiveMessageWaitTimeSeconds: 0
+      VisibilityTimeout: 900
+      DelaySeconds: 0      
+    Type: AWS::SQS::Queue     
   DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
       AssumeRolePolicyDocument:
@@ -166,7 +196,8 @@ Resources:
                   - sqs:*            
                 Resource: 
                   - !GetAtt 'DskQueue_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
-                  - !GetAtt 'DskQueueCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+                  - !GetAtt 'DskQueueCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+                  - !GetAtt 'DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
               - Action:
                   - logs:*
                 Effect: Allow
@@ -174,7 +205,8 @@ Resources:
                   - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-handler-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
                   - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-proxy-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
                   - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-proxyasync-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
-                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-monitor-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-monitorcsvagg-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
+                  - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-monitorcsvingest-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'                  
                   - !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dsk-listevents-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_:*'
               - Effect: Allow
                 Action:
@@ -209,18 +241,30 @@ Resources:
 #  The below queue is not necessarily part of the dsk and can be removed along with notification on    #
 #  config bucket                                                                                       #
 ########################################################################################################
-  PolicySQSCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+  PolicySQSCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
       PolicyDocument:
         Statement:
           - Action: SQS:*
             Effect: Allow
             Principal: '*'
-            Resource: !GetAtt 'DskQueueCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+            Resource: !GetAtt 'DskQueueCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
         Version: '2012-10-17'
       Queues:
-        - !GetAtt 'DskQueueCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueName'
+        - !GetAtt 'DskQueueCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueName'
     Type: AWS::SQS::QueuePolicy
+  PolicySQSCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: SQS:*
+            Effect: Allow
+            Principal: '*'
+            Resource: !GetAtt 'DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
+        Version: '2012-10-17'
+      Queues:
+        - !GetAtt 'DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.QueueName'
+    Type: AWS::SQS::QueuePolicy    
   DskBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -232,12 +276,19 @@ Resources:
       NotificationConfiguration:
         QueueConfigurations:
           - Event: s3:ObjectCreated:*
-            Queue: !GetAtt 'DskQueueCustom_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn' 
+            Queue: !GetAtt 'DskQueueCustomCsvAgg_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn' 
             Filter:
               S3Key:
                 Rules:
                   - Name: suffix
                     Value: 'manifest.json'
+          - Event: s3:ObjectCreated:*
+            Queue: !GetAtt 'DskQueueCustomIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn' 
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: 'manifest.json'                    
   DskDashboard_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::CloudWatch::Dashboard
     Properties: 
