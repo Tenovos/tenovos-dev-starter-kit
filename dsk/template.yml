@@ -268,7 +268,7 @@ Resources:
   DskConfigBucket_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub "dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_${AccountId}-us-east-1"
+      BucketName: !Sub "dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_${AWS::AccountId}-us-east-1"
 ########################################################################################################
 #  The below notification is not necessarily required for the starter it and can be removed so         #
 #  unnecessary message publishes are avoided (in which case also remove the queue)                     #
