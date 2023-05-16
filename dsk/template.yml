@@ -288,7 +288,7 @@ Resources:
               S3Key:
                 Rules:
                   - Name: suffix
-                    Value: 'manifest-tsv.json'                    
+                    Value: 'manifest-final.csv'                    
   DskDashboard_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Type: AWS::CloudWatch::Dashboard
     Properties: 

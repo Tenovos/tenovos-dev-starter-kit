@@ -1,12 +1,6 @@
 /* eslint-disable indent */
 const Utilities = require('../tools/utilities');
 
-async function getManifest(bucket, manifest) {
-    await Utilities.s3GetKey(bucket, manifest).then((object) => {
-        console.log('in then function');
-        return object;
-    });
-}
 /* eslint-disable indent */
 const handler = async (event, context) => {
     console.info(`ENTER_SERVICE: \n${JSON.stringify(event)}`);
