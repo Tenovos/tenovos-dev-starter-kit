@@ -219,8 +219,8 @@ Resources:
                 Action:
                   - s3:*            
                 Resource: 
-                  - !Sub 'arn:aws:s3:::dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1'
-                  - !Sub 'arn:aws:s3:::dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_-us-east-1/*'
+                  - !Sub 'arn:aws:s3:::dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_${AWS::AccountId}-us-east-1'
+                  - !Sub 'arn:aws:s3:::dsk-config_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_${AWS::AccountId}-us-east-1/*'
             Version: '2012-10-17'
           PolicyName: dsk-policy-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
       RoleName: dsk-role-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_
