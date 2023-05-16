@@ -104,6 +104,10 @@ const processAsset = async (asset) => {
     // Extract INDD Table Metadata
     const inddLinksTableMissing = asset.metadataDenormalized.system_layout_links;
 
+    if (!asset.metadataDenormalized || asset.metadataDenormalized === {} || asset.fileState === 'recycle bin') {
+      console.log(`Asset either in recycle bin or missing denormalized metadata [${JSON.stringify(asset)}]`);
+      return missingLinks;
+    }
     for (let i = 0; i < inddLinksTableMissing.length; i += 1) {
       const linkRow = inddLinksTableMissing[i];
 
