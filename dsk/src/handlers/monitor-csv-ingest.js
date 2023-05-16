@@ -7,6 +7,9 @@ const handler = async (event, context) => {
 
     const record = event.Records[0];
     const body = JSON.parse(record.body);
+    if (body.Event && body.Event === 's3:TestEvent') {
+        return context.succeed();
+    }
     const bodyRecords = body.Records;
     const actionCsv = [];
     for (let i = 0; i < bodyRecords.length; i += 1) {
