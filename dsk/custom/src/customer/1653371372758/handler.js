@@ -201,7 +201,10 @@ const processAsset = async (asset) => {
           }
         }
       } catch (e) {
-        console.error('Failed to process row', linkRow);
+        console.error('Failed to process row', {
+          objectId: asset.objectId,
+          linkRow,
+        }, e);
       }
     }
   } catch (error) {
