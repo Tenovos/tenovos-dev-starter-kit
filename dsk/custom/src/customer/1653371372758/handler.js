@@ -108,7 +108,7 @@ const processAsset = async (asset) => {
       const linkRow = inddLinksTableMissing[i];
 
       const missingLinkFilename = Path.basename(linkRow.link_file_path);
-      const missingLinkFilesize = Path.basename(linkRow.link_file_size);
+      const missingLinkFilesize = linkRow.link_file_size;
       console.log(`Checking Entry ${missingLinkFilename}`);
       // if (relsFileNames.includes(missingLinkFilename)) {
       if (linkRow.link_file_status !== 'MISSING') {
