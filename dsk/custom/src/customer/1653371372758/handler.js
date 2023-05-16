@@ -110,99 +110,103 @@ const processAsset = async (asset) => {
     }
     for (let i = 0; i < inddLinksTableMissing.length; i += 1) {
       const linkRow = inddLinksTableMissing[i];
+      try {
+        const missingLinkFilename = Path.basename(linkRow.link_file_path);
+        const missingLinkFilesize = linkRow.link_file_size;
+        console.log(`Checking Entry ${missingLinkFilename}`);
+        // if (relsFileNames.includes(missingLinkFilename)) {
+        if (linkRow.link_file_status !== 'MISSING') {
+          console.log(`Link already established ${missingLinkFilename}`);
+        } else {
+          console.log(`Need to find link for ${missingLinkFilename}`);
+          const searchTerm = [];
+          const filename = missingLinkFilename.replace('-fpo.png', '');
+          searchTerm.push(`${filename} `);
+          if (missingLinkFilename !== filename) { searchTerm.push(missingLinkFilename); }
 
-      const missingLinkFilename = Path.basename(linkRow.link_file_path);
-      const missingLinkFilesize = linkRow.link_file_size;
-      console.log(`Checking Entry ${missingLinkFilename}`);
-      // if (relsFileNames.includes(missingLinkFilename)) {
-      if (linkRow.link_file_status !== 'MISSING') {
-        console.log(`Link already established ${missingLinkFilename}`);
-      } else {
-        console.log(`Need to find link for ${missingLinkFilename}`);
-        const searchTerm = [];
-        const filename = missingLinkFilename.replace('-fpo.png', '');
-        searchTerm.push(`${filename} `);
-        if (missingLinkFilename !== filename) { searchTerm.push(missingLinkFilename); }
+          // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
+          // const searchOptions = {
+          //   excludes: [
+          //     'metadataDocument.text_content',
+          //     'technicalMetadataDocument',
+          //   ],
+          // };
 
-        // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
-        // const searchOptions = {
-        //   excludes: [
-        //     'metadataDocument.text_content',
-        //     'technicalMetadataDocument',
-        //   ],
-        // };
-
-        // Check to Search for Unconfirmed Assets
-        try {
-          // Check for Uncomfirmed Object IDs
-          const pgUnconfirmedObjectIds = JSON.parse(
-            _.get(linkRow, 'link_unconfirmed_object_ids', '[]'),
-          );
-          // Retrieve Unconfirmed Assets
-          if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
-            searchTerm.push(pgUnconfirmedObjectIds);
-          }
-        } catch (error) {
-          console.error('Failed to extract Unconfirmed Links from Asset', {
-            objectId: asset.objectId,
-          });
-        }
-
-        // Search for Placed Graphic Assets
-        // eslint-disable-next-line no-await-in-loop
-        const searchResults = await search(searchTerm, false, 50);
-        const result = searchResults;
-        console.log(`Search returned ${result.length} Assets`);
-
-        // Use Unknown Asset if no Assets found
-        if (!searchResults.length) {
-          const unknownAsset = {
-            objectId: 'unknown',
-          };
-          searchResults.push(unknownAsset);
-        }
-
-        // Loop to Extract Missing Links
-        for (let j = 0; j < result.length; j += 1) {
-          const pgAsset = result[j];
-          let skipAsset = false;
-
-          // Skip Linked INDD Files
-          if (pgAsset.filename.toLowerCase() !== filename.toLowerCase()) {
-            skipAsset = true;
+          // Check to Search for Unconfirmed Assets
+          try {
+            // Check for Uncomfirmed Object IDs
+            const pgUnconfirmedObjectIds = JSON.parse(
+              _.get(linkRow, 'link_unconfirmed_object_ids', '[]'),
+            );
+            // Retrieve Unconfirmed Assets
+            if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
+              searchTerm.push(pgUnconfirmedObjectIds);
+            }
+          } catch (error) {
+            console.error('Failed to extract Unconfirmed Links from Asset', {
+              objectId: asset.objectId,
+            });
           }
 
-          const inddObjId = asset.objectId;
-          const inddFilename = asset.filename;
-          const inddLinkGroup = _.get(asset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
-          const inddRecId = _.get(asset, 'technicalMetadata.image_metadata.recordId', 'unknown');
-          const pgObjId = pgAsset.objectId;
-          const pgFlName = pgAsset.filename;
-          const pgFlSize = _.get(pgAsset, 'technicalMetadata.tenovos_metadata.fileSizeInBytes', 'unknown');
-          const pgUsedInd = _.get(pgAsset, 'technicalMetadata.image_metadata.usedIn', 'unknown');
-          const pgLinkGroup = _.get(pgAsset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
+          // Search for Placed Graphic Assets
+          // eslint-disable-next-line no-await-in-loop
+          const searchResults = await search(searchTerm, false, 50);
+          const result = searchResults;
+          console.log(`Search returned ${result.length} Assets`);
 
-          // pgCandidate.filename !== 'Augmented Icon_100.ai'
-          // if (!pgAsset || !pgAsset.technicalMetadata || !pgAsset.technicalMetadata.image_metadata
-          //   || !pgAsset.technicalMetadata.image_metadata.fileSize) {
-          //   console.log('Got It');
-          // }
+          // Use Unknown Asset if no Assets found
+          if (!searchResults.length) {
+            const unknownAsset = {
+              objectId: 'unknown',
+              filename: missingLinkFilename,
+            };
+            searchResults.push(unknownAsset);
+          }
 
-          // Add Missing Link if Not Skipping Asset
-          if (!skipAsset) {
-            const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
-              + `\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
-              + `\t${pgUsedInd}\t${pgLinkGroup}`;
+          // Loop to Extract Missing Links
+          for (let j = 0; j < result.length; j += 1) {
+            const pgAsset = result[j];
+            let skipAsset = false;
 
-            // Add Missing Link to List
-            missingLinks.push(missingLink);
+            // Skip Linked INDD Files
+            if (pgAsset.filename !== missingLinkFilename && !pgAsset.filename.startsWith(filename)) {
+              skipAsset = true;
+            }
+
+            const inddObjId = asset.objectId;
+            const inddFilename = asset.filename;
+            const inddLinkGroup = _.get(asset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
+            const inddRecId = _.get(asset, 'technicalMetadata.image_metadata.recordId', 'unknown');
+            const pgObjId = pgAsset.objectId;
+            const pgFlName = pgAsset.filename;
+            const pgFlSize = _.get(pgAsset, 'technicalMetadata.tenovos_metadata.fileSizeInBytes', 'unknown');
+            const pgUsedInd = _.get(pgAsset, 'technicalMetadata.image_metadata.usedIn', 'unknown');
+            const pgLinkGroup = _.get(pgAsset, 'technicalMetadata.image_metadata.assetLinksLinkGroup', 'unknown');
+
+            // pgCandidate.filename !== 'Augmented Icon_100.ai'
+            // if (!pgAsset || !pgAsset.technicalMetadata || !pgAsset.technicalMetadata.image_metadata
+            //   || !pgAsset.technicalMetadata.image_metadata.fileSize) {
+            //   console.log('Got It');
+            // }
+
+            // Add Missing Link if Not Skipping Asset
+            if (!skipAsset) {
+              const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
+                + `\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
+                + `\t${pgUsedInd}\t${pgLinkGroup}`;
+
+              // Add Missing Link to List
+              missingLinks.push(missingLink);
+            }
           }
         }
+      } catch (e) {
+        console.error('Failed to process row', linkRow);
       }
     }
   } catch (error) {
     console.error('Failed to Process Asset and Extract Missing Links', asset, error);
-    throw error;
+    //    throw error;
   }
 
   console.log('Missing Links', missingLinks);
