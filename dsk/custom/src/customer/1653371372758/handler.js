@@ -23,7 +23,7 @@ function search(vals, dataOverride, limit) {
         ],
         operation: 'OR',
         excludes: [
-          'technicalMetadataDocument', 'metadataDocument.text_content',
+          'metadataDocument.text_content',
         ],
       } : dataOverride;
 
