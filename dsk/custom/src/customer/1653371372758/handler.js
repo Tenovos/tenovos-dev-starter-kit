@@ -121,8 +121,8 @@ const processAsset = async (asset) => {
           console.log(`Need to find link for ${missingLinkFilename}`);
           const searchTerm = [];
           const filename = missingLinkFilename.replace('-fpo.png', '');
-          searchTerm.push(`${filename} `);
-          if (missingLinkFilename !== filename) { searchTerm.push(missingLinkFilename); }
+          searchTerm.push(`"filename: ${filename} `);
+          if (missingLinkFilename !== filename) { searchTerm.push(`"filename: ${missingLinkFilename} "`); }
 
           // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
           // const searchOptions = {
