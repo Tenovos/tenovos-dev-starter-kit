@@ -134,15 +134,16 @@ const processAsset = async (asset) => {
           // };
 
           // Check to Search for Unconfirmed Assets
+          let pgUnconfirmedObjectIds = [];
           try {
             // Check for Uncomfirmed Object IDs
-            const pgUnconfirmedObjectIds = JSON.parse(
+            pgUnconfirmedObjectIds = JSON.parse(
               _.get(linkRow, 'link_unconfirmed_object_ids', '[]'),
             );
             // Retrieve Unconfirmed Assets
             if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
               linkStatus = 'unconfirmed';
-              //searchTerm.push(pgUnconfirmedObjectIds);
+              // searchTerm.push(pgUnconfirmedObjectIds);
             }
           } catch (error) {
             console.error('Failed to extract Unconfirmed Links from Asset', {
@@ -151,9 +152,9 @@ const processAsset = async (asset) => {
           }
 
           // Search for Placed Graphic Assets
-          // eslint-disable-next-line no-await-in-loop
           let searchResults = [];
           if (linkStatus === 'missing') {
+            // eslint-disable-next-line no-await-in-loop
             searchResults = await search(searchTerm, false, 50);
             // Use Unknown Asset if no Assets found
             if (!searchResults.length) {
@@ -164,13 +165,13 @@ const processAsset = async (asset) => {
               searchResults.push(unknownAsset);
             }
           } else if (linkStatus === 'unconfirmed') {
-            for (let x = 0; x < pgUnconfirmedObjectIds.length; x++) {
+            for (let x = 0; x < pgUnconfirmedObjectIds.length; x += 1) {
               searchResults.push(
                 {
                   objectId: pgUnconfirmedObjectIds[x],
                   filename: missingLinkFilename,
-                }
-              )
+                },
+              );
             }
           }
           const result = searchResults;
@@ -205,8 +206,8 @@ const processAsset = async (asset) => {
             // Add Missing Link if Not Skipping Asset
             if (!skipAsset) {
               const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
-                + `\t${missingLinkFilename}\t${missingLinkFilesize}\t${linkStatus}\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
-                + `\t${pgUsedInd}\t${pgLinkGroup}`;
+                + `\t${missingLinkFilename}\t${missingLinkFilesize}\t${linkStatus}\t${pgObjId}\t${pgFlName}`
+                + `\t${pgFlSize}\t${pgUsedInd}\t${pgLinkGroup}`;
 
               // Add Missing Link to List
               missingLinks.push(missingLink);
