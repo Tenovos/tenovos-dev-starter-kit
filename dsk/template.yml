@@ -91,7 +91,7 @@ Resources:
       FunctionName: 'dsk-monitorcsvagg-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       Handler: ./src/handlers/monitor-csv-agg.handler
       Runtime: nodejs16.x
-      Timeout: 180
+      Timeout: 900
       MemorySize: 256
       ReservedConcurrentExecutions: 0
       Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
@@ -148,7 +148,7 @@ Resources:
       QueueName: 'customcsvagg_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
       VisibilityTimeout: 900
-      DelaySeconds: 900
+      DelaySeconds: 300
     Type: AWS::SQS::Queue    
   DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
