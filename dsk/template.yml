@@ -91,7 +91,7 @@ Resources:
       FunctionName: 'dsk-monitorcsvagg-function-_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       Handler: ./src/handlers/monitor-csv-agg.handler
       Runtime: nodejs16.x
-      Timeout: 900
+      Timeout: 180
       MemorySize: 256
       ReservedConcurrentExecutions: 0
       Role: !GetAtt 'DskRole_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_.Arn'
