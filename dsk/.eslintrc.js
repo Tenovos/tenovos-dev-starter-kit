@@ -4,10 +4,10 @@ module.exports = {
     node: true,
     jest: true,
     es2022: true,
-    // es2022: true,
   },
   extends: [
     'airbnb-base',
+    'plugin:vue/recommended',
   ],
   parserOptions: {
     emcaVersion: 13,
