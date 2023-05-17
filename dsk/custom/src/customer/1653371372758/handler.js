@@ -110,6 +110,7 @@ const processAsset = async (asset) => {
     }
     for (let i = 0; i < inddLinksTableMissing.length; i += 1) {
       const linkRow = inddLinksTableMissing[i];
+      let linkStatus = 'missing';
       try {
         const missingLinkFilename = Path.basename(linkRow.link_file_path);
         const missingLinkFilesize = linkRow.link_file_size;
@@ -121,7 +122,7 @@ const processAsset = async (asset) => {
           console.log(`Need to find link for ${missingLinkFilename}`);
           const searchTerm = [];
           const filename = missingLinkFilename.replace('-fpo.png', '');
-          searchTerm.push(`"filename: ${filename} `);
+          searchTerm.push(`"filename: ${filename} "`);
           if (missingLinkFilename !== filename) { searchTerm.push(`"filename: ${missingLinkFilename} "`); }
 
           // also do an OR search on ABC.JPG and ABC-fpo.EXT -> filename.replaceLastInstaceOf("-fpo.", "");
@@ -140,7 +141,8 @@ const processAsset = async (asset) => {
             );
             // Retrieve Unconfirmed Assets
             if (Array.isArray(pgUnconfirmedObjectIds) && pgUnconfirmedObjectIds.length) {
-              searchTerm.push(pgUnconfirmedObjectIds);
+              linkStatus = 'unconfirmed';
+              //searchTerm.push(pgUnconfirmedObjectIds);
             }
           } catch (error) {
             console.error('Failed to extract Unconfirmed Links from Asset', {
@@ -150,18 +152,29 @@ const processAsset = async (asset) => {
 
           // Search for Placed Graphic Assets
           // eslint-disable-next-line no-await-in-loop
-          const searchResults = await search(searchTerm, false, 50);
+          let searchResults = [];
+          if (linkStatus === 'missing') {
+            searchResults = await search(searchTerm, false, 50);
+            // Use Unknown Asset if no Assets found
+            if (!searchResults.length) {
+              const unknownAsset = {
+                objectId: 'unknown',
+                filename: missingLinkFilename,
+              };
+              searchResults.push(unknownAsset);
+            }
+          } else if (linkStatus === 'unconfirmed') {
+            for (let x = 0; x < pgUnconfirmedObjectIds.length; x++) {
+              searchResults.push(
+                {
+                  objectId: pgUnconfirmedObjectIds[x],
+                  filename: missingLinkFilename,
+                }
+              )
+            }
+          }
           const result = searchResults;
           console.log(`Search returned ${result.length} Assets`);
-
-          // Use Unknown Asset if no Assets found
-          if (!searchResults.length) {
-            const unknownAsset = {
-              objectId: 'unknown',
-              filename: missingLinkFilename,
-            };
-            searchResults.push(unknownAsset);
-          }
 
           // Loop to Extract Missing Links
           for (let j = 0; j < result.length; j += 1) {
@@ -192,7 +205,7 @@ const processAsset = async (asset) => {
             // Add Missing Link if Not Skipping Asset
             if (!skipAsset) {
               const missingLink = `${inddObjId}\t${inddFilename}\t${inddLinkGroup}\t${inddRecId}`
-                + `\t${missingLinkFilename}\t${missingLinkFilesize}\tmissing\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
+                + `\t${missingLinkFilename}\t${missingLinkFilesize}\t${linkStatus}\t${pgObjId}\t${pgFlName}\t${pgFlSize}`
                 + `\t${pgUsedInd}\t${pgLinkGroup}`;
 
               // Add Missing Link to List
