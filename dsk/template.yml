@@ -148,7 +148,7 @@ Resources:
       QueueName: 'customcsvagg_CUSTOMERID_-_CUSTOMERNAME_-_DISAMBIGUATOR_'
       ReceiveMessageWaitTimeSeconds: 0
       VisibilityTimeout: 900
-      DelaySeconds: 300
+      DelaySeconds: 180
     Type: AWS::SQS::Queue    
   DskQueueCustomCsvIngest_CUSTOMERID__CUSTOMERNAME__DISAMBIGUATOR_:
     Properties:
